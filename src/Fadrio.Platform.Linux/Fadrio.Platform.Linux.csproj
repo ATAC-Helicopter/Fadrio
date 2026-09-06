@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../Fadrio.Core/Fadrio.Core.csproj" />
+    <ProjectReference Include="../Fadrio.Application/Fadrio.Application.csproj" />
+  </ItemGroup>
+</Project>

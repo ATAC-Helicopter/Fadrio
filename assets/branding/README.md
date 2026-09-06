@@ -1,12 +1,10 @@
-# Volumix branding
+# Fadrio branding
 
-`source/volumix-icon-master.svg` is the canonical editable icon. It is part of Volumix and distributed under the repository license.
+The supplied Fadrio brand package in `raster/` is the canonical public asset set for the current alpha:
 
-Raster exports are generated artifacts. Expected sizes are 16, 24, 32, 48, 64, 128, 256, 512, and 1024 pixels. Do not hand-edit an export without updating the master.
+- `fadrio-banner-{dark,light}.png` are wide repository and website banners.
+- `fadrio-logo-{dark,light}.png` are the full vertical logo compositions.
+- `fadrio-symbol-{dark,light}.png` are standalone fader symbols.
+- `fadrio-app-icon-{dark,light,monochrome}.png` are application-icon treatments.
 
-The curated presentation artwork in `raster/` is used for repository and website branding:
-
-- `volumix-wordmark-light.png` and `volumix-wordmark-dark.png` are theme-specific horizontal wordmarks.
-- `volumix-hero-dark.png` is the wide promotional image used by the FG Labs project page.
-
-These large raster compositions are not application-icon exports and do not replace the editable SVG master.
+Use the theme-appropriate asset without recoloring, stretching, cropping away the mark, or mixing it with the retired identity. The archive contains raster masters only; add future editable vector sources under `source/` and generated size-specific exports under `exports/` when they are supplied.

@@ -1,0 +1,19 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Fadrio.Core/Fadrio.Core.csproj" />
+    <Project Path="src/Fadrio.Application/Fadrio.Application.csproj" />
+    <Project Path="src/Fadrio.Infrastructure/Fadrio.Infrastructure.csproj" />
+    <Project Path="src/Fadrio.Platform.Linux/Fadrio.Platform.Linux.csproj" />
+    <Project Path="src/Fadrio.NativeInterop/Fadrio.NativeInterop.csproj" />
+    <Project Path="src/Fadrio.UI/Fadrio.UI.csproj" />
+    <Project Path="src/Fadrio.Cli/Fadrio.Cli.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Fadrio.Core.Tests/Fadrio.Core.Tests.csproj" />
+    <Project Path="tests/Fadrio.Application.Tests/Fadrio.Application.Tests.csproj" />
+    <Project Path="tests/Fadrio.Infrastructure.Tests/Fadrio.Infrastructure.Tests.csproj" />
+    <Project Path="tests/Fadrio.Platform.Linux.Tests/Fadrio.Platform.Linux.Tests.csproj" />
+    <Project Path="tests/Fadrio.NativeInterop.Tests/Fadrio.NativeInterop.Tests.csproj" />
+    <Project Path="tests/Fadrio.UI.Tests/Fadrio.UI.Tests.csproj" />
+  </Folder>
+</Solution>

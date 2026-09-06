@@ -1,17 +1,17 @@
 # Work tracking
 
-`ROADMAP.md` owns scope, identifiers, priorities, and completion state. GitHub mirrors execution through issues, milestones, and the **Volumix Roadmap** project.
+`ROADMAP.md` owns scope, identifiers, priorities, and completion state. GitHub mirrors execution through issues, milestones, and the **Fadrio Roadmap** project.
 
-- Repository: <https://github.com/ATAC-Helicopter/Volumix>
+- Repository: <https://github.com/ATAC-Helicopter/Fadrio>
 - Project: <https://github.com/users/ATAC-Helicopter/projects/9>
 
 ## Identity rules
 
-- `VMX-xxxx`: product or engineering work.
+- `FAD-xxxx`: product or engineering work.
 - `BUG-xxxxx`: a defect with observed incorrect behavior.
 - `REL-xxxxx`: a release or qualification gate.
 - One item, one ID. IDs never change category, move to another item, or get reused.
-- Titles begin with the canonical ID: `VMX-0011: Build an isolated PipeWire integration-test harness`.
+- Titles begin with the canonical ID: `FAD-0011: Build an isolated PipeWire integration-test harness`.
 - Pull requests include the owning ID in their title or body.
 - Changelog entries use IDs for release-scope changes.
 

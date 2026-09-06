@@ -1,6 +1,6 @@
-# Contributing to Volumix
+# Contributing to Fadrio
 
-Thank you for helping build Volumix. The project is early, so focused changes with clear evidence are especially valuable.
+Thank you for helping build Fadrio. The project is early, so focused changes with clear evidence are especially valuable.
 
 ## Before changing code
 

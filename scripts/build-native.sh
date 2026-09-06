@@ -22,5 +22,5 @@ if [[ "$missing" -ne 0 ]]; then
     exit 1
 fi
 
-cmake -S "$repository_root/src/native/volumix-native" -B "$repository_root/build/native" -DCMAKE_BUILD_TYPE=Debug
+cmake -S "$repository_root/src/native/fadrio-native" -B "$repository_root/build/native" -DCMAKE_BUILD_TYPE=Debug
 cmake --build "$repository_root/build/native" --parallel

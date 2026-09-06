@@ -28,7 +28,7 @@ for command in dotnet cmake ninja pkg-config gcc; do
 done
 
 if command -v dotnet >/dev/null 2>&1 && [[ "$(dotnet --version)" != 10.* ]]; then
-    echo "Volumix requires the .NET 10 SDK; found $(dotnet --version)." >&2
+    echo "Fadrio requires the .NET 10 SDK; found $(dotnet --version)." >&2
     missing=1
 fi
 
@@ -46,4 +46,4 @@ if [[ $missing -ne 0 ]]; then
     exit 1
 fi
 
-echo "Volumix development prerequisites are ready."
+echo "Fadrio development prerequisites are ready."

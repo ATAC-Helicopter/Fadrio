@@ -14,18 +14,18 @@ SPEC.loader.exec_module(roadmap_audit)
 
 class RoadmapAuditTests(unittest.TestCase):
     def test_accepts_unique_canonical_tickets_and_unallocated_ledger(self):
-        roadmap = """- [ ] `VMX-0001` `P1` Build one thing.
+        roadmap = """- [ ] `FAD-0001` `P1` Build one thing.
 - [x] `REL-00001` `P0` Qualify it.
-- Next `VMX-00xx`: `VMX-0002`
+- Next `FAD-00xx`: `FAD-0002`
 - Next `REL`: `REL-00002`
 """
-        changelog = "- `VMX-0001` Added one thing."
+        changelog = "- `FAD-0001` Added one thing."
         self.assertEqual([], roadmap_audit.audit(roadmap, changelog))
 
     def test_rejects_duplicates_malformed_tickets_and_missing_changelog_ids(self):
-        roadmap = """- [ ] `VMX-0001` `P1` Build one thing.
-- [ ] `VMX-0001` Missing priority.
-- Next `VMX-00xx`: `VMX-0001`
+        roadmap = """- [ ] `FAD-0001` `P1` Build one thing.
+- [ ] `FAD-0001` Missing priority.
+- Next `FAD-00xx`: `FAD-0001`
 """
         errors = roadmap_audit.audit(roadmap, "- Added one thing.")
         self.assertTrue(any("malformed" in error for error in errors))

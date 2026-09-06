@@ -1,6 +1,6 @@
 # Linux development setup
 
-Volumix requires the .NET 10 SDK, a C11 compiler, CMake, pkg-config, PipeWire/SPA development headers, and ALSA development headers.
+Fadrio requires the .NET 10 SDK, a C11 compiler, CMake, pkg-config, PipeWire/SPA development headers, and ALSA development headers.
 
 On Debian and Ubuntu family systems:
 

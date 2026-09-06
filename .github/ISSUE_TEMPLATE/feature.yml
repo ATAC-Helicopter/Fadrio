@@ -1,17 +1,17 @@
 name: Feature request
-description: Propose an improvement within Volumix's product scope
+description: Propose an improvement within Fadrio's product scope
 title: "feature: "
 labels: [enhancement, needs-triage]
 body:
   - type: markdown
     attributes:
-      value: Volumix controls application/device volume and physical-controller mappings. DSP, recording, routing graphs, virtual devices, accounts, and cloud services are intentionally out of scope.
+      value: Fadrio controls application/device volume and physical-controller mappings. DSP, recording, routing graphs, virtual devices, accounts, and cloud services are intentionally out of scope.
   - type: input
     id: work_id
     attributes:
       label: Work ID
-      description: Reference an existing VMX-xxxx ID or leave blank for roadmap triage.
-      placeholder: VMX-0011
+      description: Reference an existing FAD-xxxx ID or leave blank for roadmap triage.
+      placeholder: FAD-0011
   - type: textarea
     id: problem
     attributes:

@@ -5,7 +5,7 @@ Integration tests may create controlled local PipeWire streams but must not alte
 Run the isolated PipeWire topology and control test after building:
 
 ```bash
-VOLUMIX_RUN_PIPEWIRE_INTEGRATION=1 ./scripts/test.sh
+FADRIO_RUN_PIPEWIRE_INTEGRATION=1 ./scripts/test.sh
 ```
 
 The harness replaces `XDG_RUNTIME_DIR`, starts its own hardware-free PipeWire configuration, creates unlinked silent streams, verifies grouping, volume, mute, removal, recreation, and reconnect, and terminates only the exact processes it created. Its Firefox-shaped executable and desktop entry exercise the real Linux `/proc` and XDG identity path without pretending to be a real-browser qualification run.

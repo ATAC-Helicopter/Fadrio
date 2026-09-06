@@ -37,7 +37,7 @@ jobs:
       - name: Test
         run: |
           ctest --test-dir build/native --output-on-failure
-          dotnet test Volumix.slnx --configuration Debug --no-build
+          dotnet test Fadrio.slnx --configuration Debug --no-build
       - name: Isolated PipeWire integration test
         run: ./scripts/test-pipewire-integration.sh
 
@@ -64,5 +64,5 @@ jobs:
         run: ctest --test-dir build/native --output-on-failure
       - name: Test PipeWire churn and reconnect under sanitizers
         run: |
-          export VOLUMIX_SANITIZER_PRELOAD="$(gcc -print-file-name=libasan.so):$(gcc -print-file-name=libubsan.so)"
+          export FADRIO_SANITIZER_PRELOAD="$(gcc -print-file-name=libasan.so):$(gcc -print-file-name=libubsan.so)"
           ./scripts/test-pipewire-integration.sh

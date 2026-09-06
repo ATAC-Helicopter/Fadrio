@@ -1,6 +1,6 @@
 # Releasing
 
-Volumix uses semantic versioning. Before 1.0, release channels align with roadmap maturity:
+Fadrio uses semantic versioning. Before 1.0, release channels align with roadmap maturity:
 
 - `v0.1.0-m0` is the historical M0 engineering baseline.
 - `v0.x.0-alpha.N` publishes an evaluation snapshot from active milestone `0.x`.

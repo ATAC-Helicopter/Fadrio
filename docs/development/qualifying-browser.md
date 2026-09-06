@@ -1,6 +1,6 @@
 # Qualifying browser identity
 
-`VMX-0012` qualifies browser multi-stream identity. Firefox-shaped fixtures retain deterministic coverage, while the real-browser observation uses the Brave installation available on the development host.
+`FAD-0012` qualifies browser multi-stream identity. Firefox-shaped fixtures retain deterministic coverage, while the real-browser observation uses the Brave installation available on the development host.
 
 ## Automated evidence
 
@@ -18,7 +18,7 @@ The resolver also has a Brave fixture for the installed-package shape: the XDG l
 Run the automated evidence after building with:
 
 ```bash
-VOLUMIX_RUN_PIPEWIRE_INTEGRATION=1 ./scripts/test.sh
+FADRIO_RUN_PIPEWIRE_INTEGRATION=1 ./scripts/test.sh
 ```
 
 ## Real Brave observation
@@ -40,7 +40,7 @@ The fixture creates no network request and uses a very low-gain oscillator. Qual
 
 1. Launch two isolated browser profiles against `tests/fixtures/browser/brave-audio.html` with autoplay allowed.
 2. Confirm one installed browser identity, two sessions, a stable XDG canonical ID, and High confidence.
-3. Set volume, mute, and unmute through `volumixctl`; confirm every browser session follows and unrelated applications do not.
+3. Set volume, mute, and unmute through `fadrioctl`; confirm every browser session follows and unrelated applications do not.
 4. Stop one profile and confirm the application remains with one session.
 5. Start a replacement profile and confirm it rejoins the same canonical application.
 6. Record the desktop environment, distribution, browser packaging type/version, and redacted output.

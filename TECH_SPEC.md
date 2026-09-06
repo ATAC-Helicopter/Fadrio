@@ -1,7 +1,7 @@
-# Volumix — Complete Product, UX, Technical Architecture, Repository, and Delivery Specification
+# Fadrio — Complete Product, UX, Technical Architecture, Repository, and Delivery Specification
 
-> **Status:** Initial architecture specification  
-> **Product codename:** Volumix  
+> **Status:** Active architecture specification
+> **Product name:** Fadrio
 > **Primary platform:** Linux desktop  
 > **Primary audio stack:** PipeWire  
 > **Primary UI concept:** Vertical, application-centric volume mixer  
@@ -14,7 +14,7 @@
 
 # 0. Executive summary
 
-Volumix is a Linux-first desktop application whose entire purpose is to make per-application audio control simple, attractive, stable, and physically controllable.
+Fadrio is a Linux-first desktop application whose entire purpose is to make per-application audio control simple, attractive, stable, and physically controllable.
 
 It is **not** a PipeWire graph editor, audio workstation, virtual cable system, DAW, voice changer, or replacement for qpwgraph, Helvum, Carla, EasyEffects, or professional routing tools.
 
@@ -58,7 +58,7 @@ This prevents the product from becoming a collection of independent integrations
 
 ## 1.1 One-sentence description
 
-**Volumix is a polished Linux application mixer that identifies real applications, groups their audio streams, remembers user preferences, and optionally maps them to physical faders, knobs, and buttons.**
+**Fadrio is a polished Linux application mixer that identifies real applications, groups their audio streams, remembers user preferences, and optionally maps them to physical faders, knobs, and buttons.**
 
 ## 1.2 User problem
 
@@ -149,7 +149,7 @@ The internal model must never assume that the GUI is the only source of volume c
 
 ## 2.5 Linux-native behavior
 
-Volumix should respect:
+Fadrio should respect:
 
 - PipeWire;
 - XDG desktop files;
@@ -168,7 +168,7 @@ The phrase "it would be cool if" is not sufficient reason to introduce routing g
 
 ## 2.7 No invisible magic that cannot be explained
 
-When Volumix groups streams, resolves an executable, restores a saved volume, changes a profile, or maps a controller, the user should be able to inspect why.
+When Fadrio groups streams, resolves an executable, restores a saved volume, changes a profile, or maps a controller, the user should be able to inspect why.
 
 Advanced diagnostics may show:
 
@@ -211,39 +211,33 @@ The following are **out of scope for the product core** unless a future major-ve
 - Bluetooth codec management;
 - replacing PipeWire/WirePlumber.
 
-Volumix may expose a link such as **Open advanced audio routing tool** but should not implement these functions itself.
+Fadrio may expose a link such as **Open advanced audio routing tool** but should not implement these functions itself.
 
 ---
 
 # 4. Naming and identity
 
-## 4.1 Working product name
+## 4.1 Product name
 
-Use `Volumix` as a codename until trademark/domain/package-name checks are complete.
+`Fadrio` is the final public product name. New user-facing, package, repository, protocol, and source identifiers use Fadrio consistently.
 
-Before public release verify:
+Before broad binary distribution, verify:
 
 - GitHub namespace availability;
 - Flathub application ID availability;
 - domain availability if desired;
 - Debian/Fedora package-name conflicts;
-- existing applications or trademarks named Volumix;
+- existing applications or trademarks named Fadrio;
 - reverse-DNS application ID.
 
-Do not hard-code the final public name into low-level protocols until naming is finalized.
+The previous development name has no compatibility contract. The rename is intentionally completed before persistence, D-Bus, packaged desktop entries, or a stable native ABI ship.
 
 ## 4.2 Recommended application ID
 
-During development:
+Application ID:
 
 ```text
-dev.fglabs.Volumix
-```
-
-Possible release ID:
-
-```text
-dev.fglabs.Volumix
+dev.fglabs.Fadrio
 ```
 
 Keep casing and naming stable after public release because desktop entries, configuration paths, Flatpak permissions, and stored identities may depend on it.
@@ -253,19 +247,19 @@ Keep casing and naming stable after public release because desktop entries, conf
 GUI:
 
 ```text
-volumix
+fadrio
 ```
 
 Optional CLI:
 
 ```text
-volumixctl
+fadrioctl
 ```
 
 Optional native helper library:
 
 ```text
-libvolumix_native.so
+libfadrio_native.so
 ```
 
 Do not expose multiple vaguely named executables to users.
@@ -368,7 +362,7 @@ It must not become the long-term production backend.
 Rather than attempting broad direct P/Invoke against the entire PipeWire API, build a small native bridge:
 
 ```text
-src/native/volumix-native/
+src/native/fadrio-native/
 ```
 
 Responsibilities:
@@ -497,10 +491,10 @@ Use:
 Recommended paths:
 
 ```text
-$XDG_CONFIG_HOME/volumix/
-$XDG_DATA_HOME/volumix/
-$XDG_CACHE_HOME/volumix/
-$XDG_STATE_HOME/volumix/
+$XDG_CONFIG_HOME/fadrio/
+$XDG_DATA_HOME/fadrio/
+$XDG_CACHE_HOME/fadrio/
+$XDG_STATE_HOME/fadrio/
 ```
 
 Fallback to the appropriate `~/.config`, `~/.local/share`, `~/.cache`, `~/.local/state`.
@@ -523,7 +517,7 @@ Release:
 Log paths:
 
 ```text
-$XDG_STATE_HOME/volumix/logs/
+$XDG_STATE_HOME/fadrio/logs/
 ```
 
 Default level:
@@ -546,22 +540,22 @@ Never log full environment variables by default.
 
 ```text
 ┌────────────────────────────────────────────────────────────┐
-│                        Volumix.UI                          │
+│                        Fadrio.UI                          │
 │ Avalonia views, shell, tray popup, settings, controller UI│
 └───────────────────────────┬────────────────────────────────┘
                             │
 ┌───────────────────────────▼────────────────────────────────┐
-│                    Volumix.Application                    │
+│                    Fadrio.Application                    │
 │ use cases, commands, orchestration, application services  │
 └───────────────┬───────────────────────┬────────────────────┘
                 │                       │
 ┌───────────────▼────────────┐ ┌────────▼────────────────────┐
-│       Volumix.Core         │ │   Volumix.Infrastructure   │
+│       Fadrio.Core         │ │   Fadrio.Infrastructure   │
 │ domain objects/interfaces  │ │ SQLite, XDG, desktop files │
 └───────────────┬────────────┘ └────────┬────────────────────┘
                 │                       │
                 │              ┌────────▼────────────────────┐
-                │              │ Volumix.Platform.Linux     │
+                │              │ Fadrio.Platform.Linux     │
                 │              │ /proc, Steam, Flatpak,     │
                 │              │ Wine/Proton resolution     │
                 │              └────────┬────────────────────┘
@@ -569,12 +563,12 @@ Never log full environment variables by default.
                 └──────────────┬────────┘
                                │
                     ┌──────────▼─────────────┐
-                    │ Volumix.NativeInterop │
+                    │ Fadrio.NativeInterop │
                     │ C ABI wrapper         │
                     └──────────┬─────────────┘
                                │
                  ┌─────────────▼───────────────┐
-                 │ libvolumix_native.so        │
+                 │ libfadrio_native.so        │
                  │ PipeWire + ALSA Sequencer   │
                  └──────┬──────────────┬───────┘
                         │              │
@@ -588,7 +582,7 @@ Never log full environment variables by default.
 Recommended repository:
 
 ```text
-volumix/
+fadrio/
 ├── .github/
 │   ├── ISSUE_TEMPLATE/
 │   │   ├── bug.yml
@@ -655,27 +649,27 @@ volumix/
 │   └── generate-icons.sh
 │
 ├── src/
-│   ├── Volumix.Core/
-│   ├── Volumix.Application/
-│   ├── Volumix.Infrastructure/
-│   ├── Volumix.Platform.Linux/
-│   ├── Volumix.NativeInterop/
-│   ├── Volumix.UI/
-│   ├── Volumix.Cli/
+│   ├── Fadrio.Core/
+│   ├── Fadrio.Application/
+│   ├── Fadrio.Infrastructure/
+│   ├── Fadrio.Platform.Linux/
+│   ├── Fadrio.NativeInterop/
+│   ├── Fadrio.UI/
+│   ├── Fadrio.Cli/
 │   └── native/
-│       └── volumix-native/
+│       └── fadrio-native/
 │           ├── include/
 │           ├── src/
 │           ├── tests/
 │           └── CMakeLists.txt
 │
 ├── tests/
-│   ├── Volumix.Core.Tests/
-│   ├── Volumix.Application.Tests/
-│   ├── Volumix.Infrastructure.Tests/
-│   ├── Volumix.Platform.Linux.Tests/
-│   ├── Volumix.NativeInterop.Tests/
-│   ├── Volumix.UI.Tests/
+│   ├── Fadrio.Core.Tests/
+│   ├── Fadrio.Application.Tests/
+│   ├── Fadrio.Infrastructure.Tests/
+│   ├── Fadrio.Platform.Linux.Tests/
+│   ├── Fadrio.NativeInterop.Tests/
+│   ├── Fadrio.UI.Tests/
 │   ├── fixtures/
 │   │   ├── pipewire/
 │   │   ├── desktop-files/
@@ -700,7 +694,7 @@ volumix/
 ├── README.md
 ├── SECURITY.md
 ├── TECH_SPEC.md
-└── Volumix.slnx
+└── Fadrio.slnx
 ```
 
 ---
@@ -719,7 +713,7 @@ Infrastructure / Platform implementations
 UI / CLI
 ```
 
-`Volumix.Core` must not reference:
+`Fadrio.Core` must not reference:
 
 - Avalonia;
 - SQLite;
@@ -728,9 +722,9 @@ UI / CLI
 - Steam;
 - MIDI libraries.
 
-`Volumix.Application` may reference `Core`, but should not depend on Avalonia.
+`Fadrio.Application` may reference `Core`, but should not depend on Avalonia.
 
-`Volumix.UI` may depend on `Application`, `Core`, and presentation helpers.
+`Fadrio.UI` may depend on `Application`, `Core`, and presentation helpers.
 
 The native project must not depend on UI code.
 
@@ -842,7 +836,7 @@ public sealed record DynamicRoleTarget(DynamicRole Role) : MixerTarget;
 
 # 10. PipeWire object strategy
 
-Volumix should connect as a normal PipeWire client and maintain a registry of relevant objects.
+Fadrio should connect as a normal PipeWire client and maintain a registry of relevant objects.
 
 Track at minimum:
 
@@ -1394,9 +1388,9 @@ because it avoids abrupt volume jumps when software and physical positions diffe
 Required workflow:
 
 1. user clicks `Learn`;
-2. Volumix listens for eligible controller events;
+2. Fadrio listens for eligible controller events;
 3. user moves/presses a control;
-4. Volumix identifies device/channel/control;
+4. Fadrio identifies device/channel/control;
 5. user selects target;
 6. binding saved;
 7. immediate test feedback.
@@ -1562,7 +1556,7 @@ Avoid:
 if device X + day Y + network Z + audio state ...
 ```
 
-Volumix should not become Home Assistant for audio.
+Fadrio should not become Home Assistant for audio.
 
 ---
 
@@ -1571,24 +1565,24 @@ Volumix should not become Home Assistant for audio.
 CLI executable:
 
 ```text
-volumixctl
+fadrioctl
 ```
 
 Candidate commands:
 
 ```bash
-volumixctl apps
-volumixctl devices
-volumixctl controllers
-volumixctl get app spotify
-volumixctl set app spotify 35
-volumixctl mute app discord
-volumixctl unmute app discord
-volumixctl profile gaming
-volumixctl status
+fadrioctl apps
+fadrioctl devices
+fadrioctl controllers
+fadrioctl get app spotify
+fadrioctl set app spotify 35
+fadrioctl mute app discord
+fadrioctl unmute app discord
+fadrioctl profile gaming
+fadrioctl status
 ```
 
-The CLI should communicate with the running Volumix instance over D-Bus/IPC rather than opening a second independent PipeWire manager whenever possible.
+The CLI should communicate with the running Fadrio instance over D-Bus/IPC rather than opening a second independent PipeWire manager whenever possible.
 
 ---
 
@@ -1597,13 +1591,13 @@ The CLI should communicate with the running Volumix instance over D-Bus/IPC rath
 Recommended bus name:
 
 ```text
-dev.fglabs.Volumix
+dev.fglabs.Fadrio
 ```
 
 Object path:
 
 ```text
-/dev/fglabs/Volumix
+/dev/fglabs/Fadrio
 ```
 
 Provide a small stable API.
@@ -1642,7 +1636,7 @@ Security:
 
 Only one primary GUI/mixer service should own normal app state per user session.
 
-Launching `volumix` again should:
+Launching `fadrio` again should:
 
 - activate existing window, or
 - toggle the mixer popup depending on CLI flag.
@@ -1658,7 +1652,7 @@ No competing volume restore engines.
 Options:
 
 ```text
-Start Volumix when I sign in
+Start Fadrio when I sign in
 Start minimized
 Show tray icon
 Restore previous window position
@@ -1713,7 +1707,7 @@ Remember size.
 
 ```text
 ┌─────────────────────────────────────┐
-│ Volumix                   profile ▾ │
+│ Fadrio                   profile ▾ │
 │─────────────────────────────────────│
 │ OUTPUT                              │
 │ 🔊 Headphones                 72%   │
@@ -1881,7 +1875,7 @@ Customizations persist against canonical application ID.
 Cache resolved raster images in:
 
 ```text
-$XDG_CACHE_HOME/volumix/icons/
+$XDG_CACHE_HOME/fadrio/icons/
 ```
 
 Key by source identity + modification signature.
@@ -2028,7 +2022,7 @@ Do not reproduce full Settings inside the popup.
 Tray menu:
 
 ```text
-Open Volumix
+Open Fadrio
 Mute all (optional)
 Profile >
 Controllers status
@@ -2330,7 +2324,7 @@ Every runtime object gets a backend-generation token to prevent stale events fro
 
 PipeWire may restart.
 
-Volumix must:
+Fadrio must:
 
 1. detect disconnection;
 2. keep user configuration;
@@ -2359,7 +2353,7 @@ Examples:
 Show:
 
 ```text
-Volumix could not connect to PipeWire.
+Fadrio could not connect to PipeWire.
 ```
 
 Offer diagnostics.
@@ -2771,7 +2765,7 @@ dotnet test
 Native:
 
 ```bash
-cmake -S src/native/volumix-native -B build/native
+cmake -S src/native/fadrio-native -B build/native
 cmake --build build/native
 ctest --test-dir build/native
 ```
@@ -2853,8 +2847,8 @@ Useful for developers and direct downloads.
 Include:
 
 ```text
-volumix
-libvolumix_native.so
+fadrio
+libfadrio_native.so
 desktop file
 icons
 install.sh
@@ -3011,7 +3005,7 @@ First launch should be very short.
 Screen 1:
 
 ```text
-Volumix
+Fadrio
 Control the volume of applications, not audio streams.
 ```
 
@@ -3087,7 +3081,7 @@ Reset UI layout
 Reset remembered volumes
 Reset application names/icons
 Reset controller mappings
-Reset all Volumix data
+Reset all Fadrio data
 ```
 
 The destructive full reset must show exactly what is deleted.
@@ -3128,8 +3122,8 @@ Store art:
 ## 74.3 Naming
 
 ```text
-volumix-icon-master.svg
-volumix-icon-512.png
+fadrio-icon-master.svg
+fadrio-icon-512.png
 mixer-dark-150pct.png
 controller-midi-learn.png
 ```
@@ -3228,7 +3222,7 @@ Do not make README a 5,000-line technical specification; link `TECH_SPEC.md`.
 
 Bug issue fields:
 
-- Volumix version;
+- Fadrio version;
 - distribution;
 - desktop environment;
 - Wayland/X11;
@@ -3276,7 +3270,7 @@ If profile export exists:
 
 ```json
 {
-  "format": "volumix-profile",
+  "format": "fadrio-profile",
   "version": 1,
   "profile": { }
 }
@@ -3284,7 +3278,7 @@ If profile export exists:
 
 Validate strictly.
 
-Never allow imported profile files to write arbitrary paths outside Volumix data directories.
+Never allow imported profile files to write arbitrary paths outside Fadrio data directories.
 
 Icons embedded in exports should have size/type limits.
 
@@ -3296,7 +3290,7 @@ Future community template:
 
 ```json
 {
-  "format": "volumix-controller-template",
+  "format": "fadrio-controller-template",
   "version": 1,
   "device": {
     "manufacturer": "Example",
@@ -3474,7 +3468,7 @@ No X11-only assumption in core behavior.
 
 # 89. WirePlumber relationship
 
-Volumix is a PipeWire client, not a replacement session manager.
+Fadrio is a PipeWire client, not a replacement session manager.
 
 Use WirePlumber-managed graph behavior rather than competing with it.
 
@@ -3484,7 +3478,7 @@ Do not ship system WirePlumber rules unless a narrowly justified optional featur
 
 # 90. Why not PulseAudio as the main abstraction
 
-PipeWire's PulseAudio compatibility is valuable for compatibility, but Volumix wants:
+PipeWire's PulseAudio compatibility is valuable for compatibility, but Fadrio wants:
 
 - modern graph awareness;
 - native object events;
@@ -3696,7 +3690,7 @@ The recommended coding order is deliberately not "make the pretty UI first."
 
 ### Stage A - Native proof
 
-Create `libvolumix_native.so`.
+Create `libfadrio_native.so`.
 
 Prove:
 
@@ -3901,7 +3895,7 @@ Before 1.0 execute:
 
 1. apps playing;
 2. restart PipeWire/user service;
-3. Volumix shows temporary reconnect state;
+3. Fadrio shows temporary reconnect state;
 4. reconnects;
 5. applications reappear;
 6. no duplicate rows;
@@ -3913,7 +3907,7 @@ Before 1.0 execute:
 
 Recommended wording:
 
-> **Volumix is an application volume mixer for Linux.**
+> **Fadrio is an application volume mixer for Linux.**
 >
 > It turns PipeWire streams into the applications you actually recognize, gives each one a clean volume control, and lets you map apps or roles such as Game, Chat, Music, and Master to physical MIDI faders.
 
@@ -3968,7 +3962,7 @@ Do not lead with Settings.
 
 Suggested:
 
-> Volumix is a simple application volume mixer for Linux. Instead of exposing raw audio streams and process names, it groups PipeWire audio into the applications you recognize and gives each one a clean, persistent volume control. Applications and semantic roles such as Current Game, Communications, Music, and Master can also be mapped to MIDI faders, knobs, and buttons.
+> Fadrio is a simple application volume mixer for Linux. Instead of exposing raw audio streams and process names, it groups PipeWire audio into the applications you recognize and gives each one a clean, persistent volume control. Applications and semantic roles such as Current Game, Communications, Music, and Master can also be mapped to MIDI faders, knobs, and buttons.
 
 ---
 
@@ -4108,17 +4102,17 @@ Keep interfaces extensible but implementations narrow.
 # 115. Suggested repository bootstrap commands
 
 ```bash
-mkdir Volumix
-cd Volumix
+mkdir Fadrio
+cd Fadrio
 
-dotnet new sln -n Volumix
+dotnet new sln -n Fadrio
 
-dotnet new classlib -n Volumix.Core -o src/Volumix.Core
-dotnet new classlib -n Volumix.Application -o src/Volumix.Application
-dotnet new classlib -n Volumix.Infrastructure -o src/Volumix.Infrastructure
-dotnet new classlib -n Volumix.Platform.Linux -o src/Volumix.Platform.Linux
-dotnet new classlib -n Volumix.NativeInterop -o src/Volumix.NativeInterop
-dotnet new console -n Volumix.Cli -o src/Volumix.Cli
+dotnet new classlib -n Fadrio.Core -o src/Fadrio.Core
+dotnet new classlib -n Fadrio.Application -o src/Fadrio.Application
+dotnet new classlib -n Fadrio.Infrastructure -o src/Fadrio.Infrastructure
+dotnet new classlib -n Fadrio.Platform.Linux -o src/Fadrio.Platform.Linux
+dotnet new classlib -n Fadrio.NativeInterop -o src/Fadrio.NativeInterop
+dotnet new console -n Fadrio.Cli -o src/Fadrio.Cli
 ```
 
 Create the Avalonia app using the currently supported Avalonia templates/version selected for the repository.
@@ -4126,7 +4120,7 @@ Create the Avalonia app using the currently supported Avalonia templates/version
 Native:
 
 ```bash
-mkdir -p src/native/volumix-native/{include,src,tests}
+mkdir -p src/native/fadrio-native/{include,src,tests}
 ```
 
 Then wire dependencies intentionally rather than `dotnet add reference` everywhere.
@@ -4604,7 +4598,7 @@ App context menu:
 Bind physical control…
 ```
 
-Then Volumix enters MIDI Learn and automatically chooses this app as target.
+Then Fadrio enters MIDI Learn and automatically chooses this app as target.
 
 This should be one of the fastest workflows in the product.
 
@@ -4665,7 +4659,7 @@ LED 1
 
 and raw MIDI mappings.
 
-User profile then maps semantic controls to Volumix targets.
+User profile then maps semantic controls to Fadrio targets.
 
 Separate:
 
@@ -4692,7 +4686,7 @@ SPA_PARAM_Props enumeration failed errno -32
 Good:
 
 ```text
-Volumix lost its connection to the audio service and is reconnecting.
+Fadrio lost its connection to the audio service and is reconnecting.
 ```
 
 Detailed error available in diagnostics.
@@ -4768,7 +4762,7 @@ If future implementation choices conflict with this document, preserve these con
 7. **MIDI is the first external-controller protocol.**
 8. **No root/system daemon is required.**
 9. **No audio recording or DSP is performed.**
-10. **Volumix does not become a routing workstation.**
+10. **Fadrio does not become a routing workstation.**
 11. **User configuration survives process/audio/controller restarts.**
 12. **Steam/Proton/Wine resolution is a product feature, not an edge-case hack.**
 13. **The app must be pleasant at fractional scaling and modern Wayland desktops even if the production renderer currently operates through XWayland.**
@@ -4783,8 +4777,8 @@ At the time this specification was drafted:
 
 - PipeWire documentation exposes logical application metadata including `application.name`, `application.id`, `application.icon-name`, `application.process.id`, and `application.process.binary`, which directly supports the resolver strategy.
 - PipeWire 1.4 documentation describes the native client/library architecture used by the recommended backend.
-- Avalonia's current Linux documentation identifies X11 as the primary production Linux backend and a newer native Wayland backend as opt-in/experimental; therefore Volumix should qualify Linux/Wayland behavior rather than basing v1 on an experimental rendering path.
-- ALSA MIDI remains a normal Linux MIDI backend, while cross-platform libraries such as RtMidi demonstrate the expected abstraction around input/output ports. Volumix's Linux-first implementation can use ALSA directly while retaining an interface suitable for later backends.
+- Avalonia's current Linux documentation identifies X11 as the primary production Linux backend and a newer native Wayland backend as opt-in/experimental; therefore Fadrio should qualify Linux/Wayland behavior rather than basing v1 on an experimental rendering path.
+- ALSA MIDI remains a normal Linux MIDI backend, while cross-platform libraries such as RtMidi demonstrate the expected abstraction around input/output ports. Fadrio's Linux-first implementation can use ALSA directly while retaining an interface suitable for later backends.
 
 These external details should be revalidated when implementation starts and dependency versions are pinned.
 
@@ -4854,31 +4848,31 @@ Every major reversal gets an ADR.
 # Appendix B - Suggested project references
 
 ```text
-Volumix.Core
+Fadrio.Core
   -> none
 
-Volumix.Application
-  -> Volumix.Core
+Fadrio.Application
+  -> Fadrio.Core
 
-Volumix.Infrastructure
-  -> Volumix.Core
-  -> Volumix.Application
+Fadrio.Infrastructure
+  -> Fadrio.Core
+  -> Fadrio.Application
 
-Volumix.Platform.Linux
-  -> Volumix.Core
-  -> Volumix.Application
+Fadrio.Platform.Linux
+  -> Fadrio.Core
+  -> Fadrio.Application
 
-Volumix.NativeInterop
-  -> Volumix.Core
+Fadrio.NativeInterop
+  -> Fadrio.Core
 
-Volumix.UI
-  -> Volumix.Core
-  -> Volumix.Application
-  -> Volumix.Infrastructure
-  -> Volumix.Platform.Linux
-  -> Volumix.NativeInterop
+Fadrio.UI
+  -> Fadrio.Core
+  -> Fadrio.Application
+  -> Fadrio.Infrastructure
+  -> Fadrio.Platform.Linux
+  -> Fadrio.NativeInterop
 
-Volumix.Cli
+Fadrio.Cli
   -> preferably IPC contract only
 ```
 

@@ -1,8 +1,8 @@
-# Volumix contributor rules
+# Fadrio contributor rules
 
 - Read `TECH_SPEC.md` before architectural or product changes. It is authoritative.
 - Preserve the dependency direction and application-centric model in `TECH_SPEC.md`.
-- `Volumix.Core` must remain free of Avalonia, PipeWire, SQLite, Linux, Steam, and MIDI dependencies.
+- `Fadrio.Core` must remain free of Avalonia, PipeWire, SQLite, Linux, Steam, and MIDI dependencies.
 - Never replace native PipeWire integration with shell-command parsing.
 - Keep raw node IDs and process IDs out of normal UI state.
 - Add fixture tests for resolver changes.

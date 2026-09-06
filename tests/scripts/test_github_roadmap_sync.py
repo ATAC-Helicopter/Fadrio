@@ -16,7 +16,7 @@ SPEC.loader.exec_module(github_sync)
 class GitHubRoadmapSyncTests(unittest.TestCase):
     def test_parser_preserves_identity_contract_and_completion(self):
         roadmap = """## M0 — Foundation
-- [x] `VMX-0001` `P0` Build the foundation.
+- [x] `FAD-0001` `P0` Build the foundation.
   - Scope: Keep one source of truth.
   - Acceptance: The mirror is reproducible.
 ## M0.2 — Qualification
@@ -24,7 +24,7 @@ class GitHubRoadmapSyncTests(unittest.TestCase):
   - Status: In progress; evidence collection is underway.
 """
         tickets = github_sync.parse_roadmap(roadmap)
-        self.assertEqual(["VMX-0001", "REL-00002"], [item.identifier for item in tickets])
+        self.assertEqual(["FAD-0001", "REL-00002"], [item.identifier for item in tickets])
         self.assertTrue(tickets[0].completed)
         self.assertEqual("M0.2", tickets[1].milestone)
         self.assertTrue(tickets[1].in_progress)
@@ -33,7 +33,7 @@ class GitHubRoadmapSyncTests(unittest.TestCase):
 
     def test_parser_rejects_ticket_outside_known_milestone(self):
         with self.assertRaises(ValueError):
-            github_sync.parse_roadmap("## Notes\n- [ ] `VMX-0001` `P1` Invalid placement.")
+            github_sync.parse_roadmap("## Notes\n- [ ] `FAD-0001` `P1` Invalid placement.")
 
     def test_option_lookup_is_exact(self):
         field = {"name": "Priority", "options": [{"id": "one", "name": "P1"}]}
@@ -43,7 +43,7 @@ class GitHubRoadmapSyncTests(unittest.TestCase):
 
     def test_existing_issue_update_uses_closed_milestone_number(self):
         ticket = github_sync.Ticket(
-            identifier="VMX-0001",
+            identifier="FAD-0001",
             title="Build the foundation.",
             priority="P0",
             milestone="M0",
@@ -51,7 +51,7 @@ class GitHubRoadmapSyncTests(unittest.TestCase):
             completed=False,
         )
         existing = {
-            "VMX-0001": {
+            "FAD-0001": {
                 "number": 4,
                 "url": "https://github.com/example/issues/4",
                 "body": f"{github_sync.MANAGED_MARKER}\n",

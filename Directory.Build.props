@@ -7,12 +7,12 @@
     <AnalysisLevel>latest</AnalysisLevel>
     <LangVersion>latest</LangVersion>
     <Deterministic>true</Deterministic>
-    <Authors>Volumix contributors</Authors>
-    <Company>Volumix contributors</Company>
-    <Copyright>Copyright © 2026 Volumix contributors</Copyright>
+    <Authors>Fadrio contributors</Authors>
+    <Company>Fadrio contributors</Company>
+    <Copyright>Copyright © 2026 Fadrio contributors</Copyright>
     <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
     <VersionPrefix>0.2.0</VersionPrefix>
-    <VersionSuffix>alpha.1</VersionSuffix>
+    <VersionSuffix>alpha.2</VersionSuffix>
   </PropertyGroup>
 </Project>
