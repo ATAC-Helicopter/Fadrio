@@ -30,6 +30,7 @@ Fadrio resolves PipeWire playback nodes into stable logical applications and gro
 - Linux `/proc` and cached XDG desktop-entry identity resolution.
 - Deterministic multi-evidence scoring with safe conflict fallback.
 - Flatpak-first canonical identity from bounded sandbox metadata and exported desktop entries.
+- Optional Snap identity from corroborated wrapper metadata, without a Snap runtime dependency.
 - Secure local PNG icon resolution with trusted-root checks and a bounded XDG cache.
 - Stable fallback identities that never use PID.
 - Multi-session application grouping and application-wide volume/mute commands.

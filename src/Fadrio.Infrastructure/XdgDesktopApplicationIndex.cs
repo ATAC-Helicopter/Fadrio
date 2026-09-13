@@ -52,6 +52,14 @@ public sealed class XdgDesktopApplicationIndex : IDesktopApplicationIndex
             .ToArray();
     }
 
+    public IReadOnlyList<DesktopApplicationEntry> FindBySnapInstanceName(string snapInstanceName)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(snapInstanceName);
+        return _entries
+            .Where(entry => entry.SnapInstanceName?.Equals(snapInstanceName, StringComparison.OrdinalIgnoreCase) == true)
+            .ToArray();
+    }
+
     public static IEnumerable<string> GetStandardApplicationDirectories()
     {
         string dataHome = Environment.GetEnvironmentVariable("XDG_DATA_HOME") ??

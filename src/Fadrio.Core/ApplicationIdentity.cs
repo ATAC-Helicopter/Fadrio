@@ -21,7 +21,8 @@ public enum IdentityEvidenceKind
     Fallback,
     ProcessEnvironment,
     InstallationMetadata,
-    FlatpakApplicationId
+    FlatpakApplicationId,
+    SnapPackageName
 }
 
 public sealed record IdentityEvidence(

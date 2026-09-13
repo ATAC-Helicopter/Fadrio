@@ -23,10 +23,14 @@ public sealed class LinuxProcMetadataProvider(string procRoot = "/proc") : IProc
         {
             string? executablePath = ResolveExecutable(Path.Combine(directory, "exe"));
             IReadOnlyList<string> arguments = ReadNullSeparated(Path.Combine(directory, "cmdline"));
+            IReadOnlyDictionary<string, string> environment = ReadIdentityEnvironment(
+                directory, executablePath, arguments);
             return ValueTask.FromResult<ProcessMetadata?>(new(processId, executablePath, arguments)
             {
                 FlatpakId = ReadFlatpakId(directory),
-                IdentityEnvironment = ReadIdentityEnvironment(directory, executablePath, arguments)
+                SnapName = environment.GetValueOrDefault("SNAP_NAME"),
+                SnapInstanceName = environment.GetValueOrDefault("SNAP_INSTANCE_NAME"),
+                IdentityEnvironment = environment
             });
         }
         catch (Exception exception) when (exception is FileNotFoundException or DirectoryNotFoundException or
@@ -83,13 +87,9 @@ public sealed class LinuxProcMetadataProvider(string procRoot = "/proc") : IProc
     {
         var values = new Dictionary<string, string>(StringComparer.Ordinal);
         string binary = Path.GetFileName(executablePath ?? string.Empty);
-        bool relevant = binary.Contains("wine", StringComparison.OrdinalIgnoreCase) ||
+        bool steamRelevant = binary.Contains("wine", StringComparison.OrdinalIgnoreCase) ||
             binary.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) ||
             arguments.Any(argument => argument.EndsWith(".exe", StringComparison.OrdinalIgnoreCase));
-        if (!relevant)
-        {
-            return values;
-        }
 
         try
         {
@@ -107,9 +107,16 @@ public sealed class LinuxProcMetadataProvider(string procRoot = "/proc") : IProc
             foreach (string entry in environment.Split('\0', StringSplitOptions.RemoveEmptyEntries))
             {
                 int separator = entry.IndexOf('=');
-                if (separator > 0 && IdentityEnvironmentKeys.Contains(entry[..separator]))
+                if (separator <= 0)
                 {
-                    values[entry[..separator]] = entry[(separator + 1)..];
+                    continue;
+                }
+
+                string key = entry[..separator];
+                bool snapKey = key is "SNAP_NAME" or "SNAP_INSTANCE_NAME" or "SNAP";
+                if (snapKey || steamRelevant && IdentityEnvironmentKeys.Contains(key))
+                {
+                    values[key] = entry[(separator + 1)..];
                 }
             }
         }

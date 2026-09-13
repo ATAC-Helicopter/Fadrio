@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Fixture Player Snap
+Exec=env BAMF_DESKTOP_FILE_HINT=/var/lib/snapd/desktop/applications/fixture-player_fixture-player.desktop /snap/bin/fixture-player
+Icon=/snap/fixture-player/current/meta/gui/icon.png
+X-SnapInstanceName=fixture-player
+NoDisplay=false
+Hidden=false

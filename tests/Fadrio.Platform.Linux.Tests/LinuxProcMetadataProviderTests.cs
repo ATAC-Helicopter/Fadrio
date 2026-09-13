@@ -64,6 +64,38 @@ public sealed class LinuxProcMetadataProviderTests
         }
     }
 
+    [Fact]
+    public async Task RetainsOnlySnapIdentityEnvironmentForNativeProcess()
+    {
+        string root = Path.Combine(Path.GetTempPath(), $"fadrio-proc-{Guid.NewGuid():N}");
+        string directory = Path.Combine(root, "123");
+        Directory.CreateDirectory(directory);
+        try
+        {
+            string executable = Path.Combine(root, "fixture-player");
+            await File.WriteAllTextAsync(executable, "fixture", TestContext.Current.CancellationToken);
+            File.CreateSymbolicLink(Path.Combine(directory, "exe"), executable);
+            await File.WriteAllTextAsync(Path.Combine(directory, "cmdline"), "fixture-player\0",
+                TestContext.Current.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(directory, "environ"),
+                "SNAP_NAME=fixture-player\0SNAP_INSTANCE_NAME=fixture-player_work\0SNAP=/snap/fixture-player/current\0SECRET_TOKEN=hidden\0",
+                TestContext.Current.CancellationToken);
+
+            var result = await new LinuxProcMetadataProvider(root).GetAsync(
+                123, TestContext.Current.CancellationToken);
+
+            Assert.NotNull(result);
+            Assert.Equal("fixture-player", result.SnapName);
+            Assert.Equal("fixture-player_work", result.SnapInstanceName);
+            Assert.Equal(3, result.IdentityEnvironment.Count);
+            Assert.DoesNotContain("SECRET_TOKEN", result.IdentityEnvironment.Keys);
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
     [Theory]
     [InlineData("wine64-preloader", true)]
     [InlineData("Game.exe", true)]
