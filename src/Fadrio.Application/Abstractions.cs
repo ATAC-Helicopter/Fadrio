@@ -34,6 +34,15 @@ public interface IDesktopApplicationIndex
     IReadOnlyList<DesktopApplicationEntry> FindById(string desktopFileId);
 }
 
+public sealed record ResolvedIcon(string Path, string MediaType, int Width, int Height);
+
+public interface ILocalIconResolver
+{
+    ValueTask<ResolvedIcon?> ResolveAsync(
+        IconReference reference,
+        CancellationToken cancellationToken = default);
+}
+
 public interface ISteamApplicationResolver
 {
     ValueTask<ApplicationIdentity?> TryResolveAsync(
