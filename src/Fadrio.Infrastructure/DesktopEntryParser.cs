@@ -51,6 +51,7 @@ public static class DesktopEntryParser
         values.TryGetValue("Icon", out string? icon);
         values.TryGetValue("StartupWMClass", out string? startupWmClass);
         values.TryGetValue("X-Flatpak", out string? flatpakId);
+        values.TryGetValue("X-SnapInstanceName", out string? snapInstanceName);
         return new DesktopApplicationEntry(
             id,
             name,
@@ -60,7 +61,8 @@ public static class DesktopEntryParser
             ReadBoolean(values, "NoDisplay"),
             ReadBoolean(values, "Hidden"),
             path,
-            flatpakId);
+            flatpakId,
+            snapInstanceName);
     }
 
     public static string? NormalizeExecutable(string? exec)

@@ -10,6 +10,8 @@ public interface IApplicationResolver
 public sealed record ProcessMetadata(int ProcessId, string? ExecutablePath, IReadOnlyList<string> Arguments)
 {
     public string? FlatpakId { get; init; }
+    public string? SnapName { get; init; }
+    public string? SnapInstanceName { get; init; }
     public IReadOnlyDictionary<string, string> IdentityEnvironment { get; init; } =
         new Dictionary<string, string>(StringComparer.Ordinal);
 }
@@ -28,12 +30,15 @@ public sealed record DesktopApplicationEntry(
     bool NoDisplay,
     bool Hidden,
     string SourcePath,
-    string? FlatpakId = null);
+    string? FlatpakId = null,
+    string? SnapInstanceName = null);
 
 public interface IDesktopApplicationIndex
 {
     IReadOnlyList<DesktopApplicationEntry> FindByExecutable(string executablePath);
     IReadOnlyList<DesktopApplicationEntry> FindById(string desktopFileId);
+    IReadOnlyList<DesktopApplicationEntry> FindBySnapInstanceName(string snapInstanceName) =>
+        FindById(snapInstanceName);
 }
 
 public sealed record ResolvedIcon(string Path, string MediaType, int Width, int Height);
@@ -54,6 +59,14 @@ public interface ISteamApplicationResolver
 }
 
 public interface IFlatpakApplicationResolver
+{
+    ValueTask<ApplicationIdentity?> TryResolveAsync(
+        AudioSession session,
+        ProcessMetadata? process,
+        CancellationToken cancellationToken = default);
+}
+
+public interface ISnapApplicationResolver
 {
     ValueTask<ApplicationIdentity?> TryResolveAsync(
         AudioSession session,

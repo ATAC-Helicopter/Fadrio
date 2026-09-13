@@ -30,7 +30,8 @@ try
     var desktopIndex = new XdgDesktopApplicationIndex();
     var resolver = new ApplicationResolver(new LinuxProcMetadataProvider(), desktopIndex,
         new SteamApplicationResolver(new SteamApplicationIndex()),
-        new FlatpakApplicationResolver(desktopIndex));
+        new FlatpakApplicationResolver(desktopIndex),
+        new SnapApplicationResolver(desktopIndex));
     var coordinator = new MixerStateCoordinator(resolver);
     if (watch)
     {

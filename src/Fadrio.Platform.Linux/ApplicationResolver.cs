@@ -9,7 +9,8 @@ public sealed class ApplicationResolver(
     IProcessMetadataProvider processes,
     IDesktopApplicationIndex desktopApplications,
     ISteamApplicationResolver? steamApplications = null,
-    IFlatpakApplicationResolver? flatpakApplications = null) : IApplicationResolver
+    IFlatpakApplicationResolver? flatpakApplications = null,
+    ISnapApplicationResolver? snapApplications = null) : IApplicationResolver
 {
     private const int MinimumDesktopScore = 50;
     private const int StrongCandidateScore = 60;
@@ -28,6 +29,12 @@ public sealed class ApplicationResolver(
             await flatpakApplications.TryResolveAsync(session, process, cancellationToken).ConfigureAwait(false) is { } flatpakIdentity)
         {
             return flatpakIdentity;
+        }
+
+        if (snapApplications is not null &&
+            await snapApplications.TryResolveAsync(session, process, cancellationToken).ConfigureAwait(false) is { } snapIdentity)
+        {
+            return snapIdentity;
         }
 
         if (steamApplications is not null &&

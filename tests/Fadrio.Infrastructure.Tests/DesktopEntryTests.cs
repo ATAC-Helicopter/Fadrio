@@ -51,4 +51,15 @@ public sealed class DesktopEntryTests
         var index = new XdgDesktopApplicationIndex([Fixtures]);
         Assert.Equal("Spotify", Assert.Single(index.FindById("com.spotify.Client")).Name);
     }
+
+    [Fact]
+    public void ParsesAndIndexesExportedSnapMetadata()
+    {
+        var entry = DesktopEntryParser.Parse(Path.Combine(Fixtures, "fixture-player_fixture-player.desktop"));
+
+        Assert.NotNull(entry);
+        Assert.Equal("fixture-player", entry.SnapInstanceName);
+        var index = new XdgDesktopApplicationIndex([Fixtures]);
+        Assert.Equal("Fixture Player Snap", Assert.Single(index.FindBySnapInstanceName("fixture-player")).Name);
+    }
 }

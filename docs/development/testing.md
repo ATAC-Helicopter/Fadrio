@@ -8,7 +8,7 @@ Run all managed and native tests with:
 
 Unit tests must not require audio hardware, a real `/proc`, Steam, or a controller. Use fixtures and fake backends. Real PipeWire qualification is a separate integration/manual layer and must use controlled silent streams where possible.
 
-Resolver coverage includes missing/disappearing processes, ambiguous desktop entries, native applications, browser identity, executable fallback, Flatpak sandbox metadata, and Proton fixtures. Native coverage focuses on lifecycle, event translation, ownership, commands, and reconnect behavior.
+Resolver coverage includes missing/disappearing processes, ambiguous desktop entries, native applications, browser identity, executable fallback, Flatpak sandbox metadata, Snap wrapper fixtures, and Proton fixtures. Native coverage focuses on lifecycle, event translation, ownership, commands, and reconnect behavior.
 
 The opt-in isolated PipeWire test is enabled with `FADRIO_RUN_PIPEWIRE_INTEGRATION=1 ./scripts/test.sh`. It uses a private runtime directory and unlinked silent streams, leaving the user's normal PipeWire instance and applications untouched.
 
