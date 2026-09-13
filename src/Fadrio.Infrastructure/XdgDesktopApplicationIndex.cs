@@ -47,7 +47,8 @@ public sealed class XdgDesktopApplicationIndex : IDesktopApplicationIndex
             ? desktopFileId[..^8]
             : desktopFileId;
         return _entries
-            .Where(entry => entry.Id.Equals(normalized, StringComparison.OrdinalIgnoreCase))
+            .Where(entry => entry.Id.Equals(normalized, StringComparison.OrdinalIgnoreCase) ||
+                entry.FlatpakId?.Equals(normalized, StringComparison.OrdinalIgnoreCase) == true)
             .ToArray();
     }
 

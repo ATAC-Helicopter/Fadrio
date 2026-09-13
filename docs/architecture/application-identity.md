@@ -8,10 +8,13 @@ The resolver evaluates these evidence sources together:
 2. `/proc/<pid>/exe` when available;
 3. executable basename/path;
 4. PipeWire application and icon identifiers;
-5. one cached XDG desktop-entry index;
-6. a stable hash of the best non-PID fallback evidence.
+5. trusted Flatpak sandbox metadata from `/proc/<pid>/root/.flatpak-info`;
+6. one cached XDG desktop-entry index;
+7. a stable hash of the best non-PID fallback evidence.
 
 Examples include `xdg:org.mozilla.firefox`, `exe:/usr/bin/vlc`, and `unknown:<hash>`. Ambiguous desktop matches reduce confidence instead of guessing.
+
+Flatpak identity is evaluated before Steam and ordinary desktop scoring. A syntactically valid application ID read from the process sandbox produces `flatpak:<app-id>`; an exported host desktop entry with the same ID supplies its display name and icon. Fadrio reads only the bounded `[Application] name` value and does not require a portal or elevated access. Missing, inaccessible, oversized, or invalid metadata falls through to the ordinary resolver.
 
 Desktop candidates receive fixed weights for exact executable paths, executable basenames, application IDs, and icon IDs. Scores are accumulated by canonical desktop ID and candidates are ordered deterministically. Agreeing independent evidence raises confidence. When two strong candidates remain too close, the resolver records `ConflictingEvidence` and falls back to the stable executable or PipeWire identity instead of choosing a desktop application. Scores and rejected conflicts remain inspectable in the evidence list.
 

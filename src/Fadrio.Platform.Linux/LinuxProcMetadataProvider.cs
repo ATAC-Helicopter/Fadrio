@@ -25,6 +25,7 @@ public sealed class LinuxProcMetadataProvider(string procRoot = "/proc") : IProc
             IReadOnlyList<string> arguments = ReadNullSeparated(Path.Combine(directory, "cmdline"));
             return ValueTask.FromResult<ProcessMetadata?>(new(processId, executablePath, arguments)
             {
+                FlatpakId = ReadFlatpakId(directory),
                 IdentityEnvironment = ReadIdentityEnvironment(directory, executablePath, arguments)
             });
         }
@@ -34,6 +35,41 @@ public sealed class LinuxProcMetadataProvider(string procRoot = "/proc") : IProc
             // A stream's process can legitimately exit between the PipeWire event and inspection.
             return ValueTask.FromResult<ProcessMetadata?>(null);
         }
+    }
+
+    private static string? ReadFlatpakId(string processDirectory)
+    {
+        try
+        {
+            string path = Path.Combine(processDirectory, "root", ".flatpak-info");
+            using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+            const int maximumBytes = 64 * 1024;
+            if (stream.Length > maximumBytes)
+            {
+                return null;
+            }
+
+            using var reader = new StreamReader(stream);
+            bool inApplication = false;
+            while (reader.ReadLine() is { } line)
+            {
+                string trimmed = line.Trim();
+                if (trimmed.StartsWith("[", StringComparison.Ordinal))
+                {
+                    inApplication = trimmed.Equals("[Application]", StringComparison.Ordinal);
+                }
+                else if (inApplication && trimmed.StartsWith("name=", StringComparison.OrdinalIgnoreCase))
+                {
+                    return trimmed[5..].Trim() is { Length: > 0 } id ? id : null;
+                }
+            }
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            // Native processes and inaccessible sandbox roots simply have no Flatpak evidence.
+        }
+
+        return null;
     }
 
     private static string? ResolveExecutable(string path)

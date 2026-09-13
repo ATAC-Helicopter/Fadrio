@@ -34,6 +34,36 @@ public sealed class LinuxProcMetadataProviderTests
         Assert.Null(await provider.GetAsync(123, TestContext.Current.CancellationToken));
     }
 
+    [Fact]
+    public async Task ReadsFlatpakIdFromSandboxMetadataWithoutRetainingOtherValues()
+    {
+        string root = Path.Combine(Path.GetTempPath(), $"fadrio-proc-{Guid.NewGuid():N}");
+        string processDirectory = Path.Combine(root, "123");
+        Directory.CreateDirectory(Path.Combine(processDirectory, "root"));
+        try
+        {
+            string executable = Path.Combine(root, "fixture-player");
+            await File.WriteAllTextAsync(executable, "fixture", TestContext.Current.CancellationToken);
+            File.CreateSymbolicLink(Path.Combine(processDirectory, "exe"), executable);
+            await File.WriteAllTextAsync(Path.Combine(processDirectory, "cmdline"), "fixture-player\0",
+                TestContext.Current.CancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(processDirectory, "root", ".flatpak-info"),
+                "[Application]\nname=org.example.Player\nruntime=org.example.Platform/x86_64/stable\n[Instance]\ninstance-id=secret\n",
+                TestContext.Current.CancellationToken);
+
+            var result = await new LinuxProcMetadataProvider(root).GetAsync(
+                123, TestContext.Current.CancellationToken);
+
+            Assert.NotNull(result);
+            Assert.Equal("org.example.Player", result.FlatpakId);
+            Assert.Empty(result.IdentityEnvironment);
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
     [Theory]
     [InlineData("wine64-preloader", true)]
     [InlineData("Game.exe", true)]
