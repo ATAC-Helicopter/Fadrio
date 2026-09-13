@@ -9,6 +9,7 @@ public interface IApplicationResolver
 
 public sealed record ProcessMetadata(int ProcessId, string? ExecutablePath, IReadOnlyList<string> Arguments)
 {
+    public string? FlatpakId { get; init; }
     public IReadOnlyDictionary<string, string> IdentityEnvironment { get; init; } =
         new Dictionary<string, string>(StringComparer.Ordinal);
 }
@@ -26,7 +27,8 @@ public sealed record DesktopApplicationEntry(
     string? StartupWmClass,
     bool NoDisplay,
     bool Hidden,
-    string SourcePath);
+    string SourcePath,
+    string? FlatpakId = null);
 
 public interface IDesktopApplicationIndex
 {
@@ -44,6 +46,14 @@ public interface ILocalIconResolver
 }
 
 public interface ISteamApplicationResolver
+{
+    ValueTask<ApplicationIdentity?> TryResolveAsync(
+        AudioSession session,
+        ProcessMetadata? process,
+        CancellationToken cancellationToken = default);
+}
+
+public interface IFlatpakApplicationResolver
 {
     ValueTask<ApplicationIdentity?> TryResolveAsync(
         AudioSession session,

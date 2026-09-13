@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Spotify
+Exec=/usr/bin/flatpak run --branch=stable --arch=x86_64 --command=spotify com.spotify.Client %U
+Icon=com.spotify.Client
+StartupWMClass=spotify
+X-Flatpak=com.spotify.Client
+NoDisplay=false
+Hidden=false

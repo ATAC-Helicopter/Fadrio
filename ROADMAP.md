@@ -139,7 +139,9 @@ Canonical ticket format:
 - [x] `FAD-0202` `P1` Implement secure local icon resolution and bounded caching.
   - Scope: resolve absolute and icon-name PNG references only from configured XDG icon roots; reject remote, traversal, unsupported, oversized, malformed-header, excessive-dimension, and symlink-escape inputs; cache validated local files by source modification signature.
   - Acceptance: fixture tests cover named and absolute resolution, cache reuse/invalidation/pruning, trust-boundary enforcement, format rejection, and file/dimension limits; cache entries are bounded by count and total bytes.
-- [ ] `FAD-0203` `P1` Add Flatpak-first canonical identity and fixtures.
+- [x] `FAD-0203` `P1` Add Flatpak-first canonical identity and fixtures.
+  - Scope: read bounded Flatpak application metadata through the unprivileged process root, validate the application ID against Flatpak/D-Bus naming rules, resolve exported host desktop metadata, and prefer `flatpak:<app-id>` before Steam and ordinary XDG scoring.
+  - Acceptance: synthetic proc and desktop fixtures prove metadata extraction, canonical identity, host name/icon enrichment, precedence over Steam, invalid-ID rejection, and safe fallback when trusted Flatpak evidence is absent.
 - [ ] `FAD-0204` `P2` Add Snap wrapper identity without making Snap a dependency.
 - [ ] `FAD-0205` `P1` Add resolver cache invalidation and desktop-index refresh watching.
 - [ ] `FAD-0206` `P1` Add inspectable advanced identity/session diagnostics.

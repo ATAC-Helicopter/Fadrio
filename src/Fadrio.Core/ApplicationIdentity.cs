@@ -20,7 +20,8 @@ public enum IdentityEvidenceKind
     ConflictingEvidence,
     Fallback,
     ProcessEnvironment,
-    InstallationMetadata
+    InstallationMetadata,
+    FlatpakApplicationId
 }
 
 public sealed record IdentityEvidence(

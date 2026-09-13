@@ -8,7 +8,8 @@ namespace Fadrio.Platform.Linux;
 public sealed class ApplicationResolver(
     IProcessMetadataProvider processes,
     IDesktopApplicationIndex desktopApplications,
-    ISteamApplicationResolver? steamApplications = null) : IApplicationResolver
+    ISteamApplicationResolver? steamApplications = null,
+    IFlatpakApplicationResolver? flatpakApplications = null) : IApplicationResolver
 {
     private const int MinimumDesktopScore = 50;
     private const int StrongCandidateScore = 60;
@@ -22,6 +23,12 @@ public sealed class ApplicationResolver(
         ProcessMetadata? process = session.ProcessId is { } processId
             ? await processes.GetAsync(processId, cancellationToken).ConfigureAwait(false)
             : null;
+
+        if (flatpakApplications is not null &&
+            await flatpakApplications.TryResolveAsync(session, process, cancellationToken).ConfigureAwait(false) is { } flatpakIdentity)
+        {
+            return flatpakIdentity;
+        }
 
         if (steamApplications is not null &&
             await steamApplications.TryResolveAsync(session, process, cancellationToken).ConfigureAwait(false) is { } steamIdentity)

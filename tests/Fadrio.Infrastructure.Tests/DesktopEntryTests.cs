@@ -39,4 +39,16 @@ public sealed class DesktopEntryTests
         Assert.Equal("Brave Web Browser", Assert.Single(index.FindById("brave-browser")).Name);
         Assert.Equal("Brave Web Browser", Assert.Single(index.FindById("brave-browser.desktop")).Name);
     }
+
+    [Fact]
+    public void ParsesFlatpakLauncherAndIndexesItsApplicationId()
+    {
+        var entry = DesktopEntryParser.Parse(Path.Combine(Fixtures, "com.spotify.Client.desktop"));
+
+        Assert.NotNull(entry);
+        Assert.Equal("/usr/bin/flatpak", entry.Executable);
+        Assert.Equal("com.spotify.Client", entry.FlatpakId);
+        var index = new XdgDesktopApplicationIndex([Fixtures]);
+        Assert.Equal("Spotify", Assert.Single(index.FindById("com.spotify.Client")).Name);
+    }
 }
