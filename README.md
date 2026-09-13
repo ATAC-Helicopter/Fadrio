@@ -29,6 +29,7 @@ Fadrio resolves PipeWire playback nodes into stable logical applications and gro
 - Versioned C ABI with copied, serialized managed events.
 - Linux `/proc` and cached XDG desktop-entry identity resolution.
 - Deterministic multi-evidence scoring with safe conflict fallback.
+- Secure local PNG icon resolution with trusted-root checks and a bounded XDG cache.
 - Stable fallback identities that never use PID.
 - Multi-session application grouping and application-wide volume/mute commands.
 - Managed reconnect supervision with generation isolation.

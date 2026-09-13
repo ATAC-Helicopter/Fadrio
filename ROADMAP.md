@@ -136,7 +136,9 @@ Canonical ticket format:
   - Scope: rename user-facing and internal application identity, managed projects and namespaces, executables, native ABI, XDG paths, repository/tracker metadata, release artifacts, and website; replace the previous artwork with the supplied Fadrio branding package.
   - Acceptance: tracked source and current public surfaces use Fadrio consistently, the renamed solution passes the full managed/native test pipeline, and the Fadrio alpha release and FG Labs page are live.
 - [x] `FAD-0201` `P0` Replace linear resolver decisions with deterministic multi-evidence scoring and conflict handling.
-- [ ] `FAD-0202` `P1` Implement secure local icon resolution and bounded caching.
+- [x] `FAD-0202` `P1` Implement secure local icon resolution and bounded caching.
+  - Scope: resolve absolute and icon-name PNG references only from configured XDG icon roots; reject remote, traversal, unsupported, oversized, malformed-header, excessive-dimension, and symlink-escape inputs; cache validated local files by source modification signature.
+  - Acceptance: fixture tests cover named and absolute resolution, cache reuse/invalidation/pruning, trust-boundary enforcement, format rejection, and file/dimension limits; cache entries are bounded by count and total bytes.
 - [ ] `FAD-0203` `P1` Add Flatpak-first canonical identity and fixtures.
 - [ ] `FAD-0204` `P2` Add Snap wrapper identity without making Snap a dependency.
 - [ ] `FAD-0205` `P1` Add resolver cache invalidation and desktop-index refresh watching.
