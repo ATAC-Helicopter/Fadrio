@@ -1,6 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk">
-  <ItemGroup>
-    <ProjectReference Include="../Volumix.Core/Volumix.Core.csproj" />
-    <ProjectReference Include="../Volumix.Application/Volumix.Application.csproj" />
-  </ItemGroup>
-</Project>

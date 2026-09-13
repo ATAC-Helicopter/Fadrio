@@ -1,11 +1,11 @@
 name: Bug report
-description: Report a reproducible Volumix defect
+description: Report a reproducible Fadrio defect
 title: "bug: "
 labels: [bug, needs-triage]
 body:
   - type: markdown
     attributes:
-      value: Thanks for helping improve Volumix. Remove private data from diagnostics before attaching them.
+      value: Thanks for helping improve Fadrio. Remove private data from diagnostics before attaching them.
   - type: input
     id: work_id
     attributes:
@@ -15,7 +15,7 @@ body:
   - type: input
     id: version
     attributes:
-      label: Volumix version or commit
+      label: Fadrio version or commit
       placeholder: 0.1.0 or commit SHA
     validations:
       required: true

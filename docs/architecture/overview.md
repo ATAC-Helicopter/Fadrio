@@ -1,17 +1,17 @@
 # Architecture overview
 
-Volumix presents logical applications while containing PipeWire's transient nodes below the user-facing model.
+Fadrio presents logical applications while containing PipeWire's transient nodes below the user-facing model.
 
 ```text
-Volumix.UI / Volumix.Cli
+Fadrio.UI / Fadrio.Cli
           ↓
-Volumix.Application
+Fadrio.Application
           ↓
-      Volumix.Core
+      Fadrio.Core
           ↑
 Infrastructure / Platform.Linux / NativeInterop
           ↓
-libvolumix_native.so → PipeWire
+libfadrio_native.so → PipeWire
 ```
 
 Dependencies point toward Core. Platform implementations satisfy interfaces owned by Core or Application; Core never imports platform, storage, UI, Steam, or MIDI APIs.

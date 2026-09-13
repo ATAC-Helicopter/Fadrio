@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Mirror canonical Volumix roadmap tickets into GitHub issues and milestones."""
+"""Mirror canonical Fadrio roadmap tickets into GitHub issues and milestones."""
 
 from __future__ import annotations
 
@@ -14,11 +14,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 ROADMAP_PATH = ROOT / "ROADMAP.md"
-REPOSITORY = "ATAC-Helicopter/Volumix"
+REPOSITORY = "ATAC-Helicopter/Fadrio"
 OWNER = "ATAC-Helicopter"
 MANAGED_MARKER = "Synced from ROADMAP.md"
 TICKET_PATTERN = re.compile(
-    r"^- \[(?P<done>[ xX])\] `(?P<id>VMX-\d{4}|BUG-\d{5}|REL-\d{5})` "
+    r"^- \[(?P<done>[ xX])\] `(?P<id>FAD-\d{4}|BUG-\d{5}|REL-\d{5})` "
     r"`(?P<priority>P[012])` (?P<title>\S.*)$"
 )
 MILESTONES = {
@@ -48,8 +48,8 @@ AREAS = {
     "1.0": "Release",
 }
 LABELS = {
-    "roadmap": ("5319E7", "Tracked by the canonical Volumix roadmap"),
-    "kind:vmx": ("8250DF", "Product or engineering work item"),
+    "roadmap": ("5319E7", "Tracked by the canonical Fadrio roadmap"),
+    "kind:fad": ("8250DF", "Product or engineering work item"),
     "kind:bug": ("D73A4A", "Observed incorrect behavior"),
     "kind:rel": ("B60205", "Release or qualification gate"),
     "priority:P0": ("B60205", "Release-blocking priority"),
@@ -83,7 +83,7 @@ class Ticket:
             return "kind:bug"
         if self.identifier.startswith("REL-"):
             return "kind:rel"
-        return "kind:vmx"
+        return "kind:fad"
 
     @property
     def body(self) -> str:
@@ -188,7 +188,7 @@ def issue_index() -> dict[str, dict[str, object]]:
     index: dict[str, dict[str, object]] = {}
     for issue in issues:
         identifier = issue["title"].split(":", 1)[0]
-        if re.fullmatch(r"VMX-\d{4}|BUG-\d{5}|REL-\d{5}", identifier):
+        if re.fullmatch(r"FAD-\d{4}|BUG-\d{5}|REL-\d{5}", identifier):
             index[identifier] = issue
     return index
 

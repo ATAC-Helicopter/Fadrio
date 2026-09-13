@@ -12,7 +12,7 @@ PipeWire playback nodes
   -> CLI or UI presentation
 ```
 
-Native callback values are borrowed only during the callback. `Volumix.NativeInterop` copies all strings immediately and places normalized events on a single-reader channel. Neither native code nor callbacks know about Avalonia.
+Native callback values are borrowed only during the callback. `Fadrio.NativeInterop` copies all strings immediately and places normalized events on a single-reader channel. Neither native code nor callbacks know about Avalonia.
 
 The XDG desktop index is constructed once. Resolver requests query that cache rather than rescanning application directories. `/proc` disappearance and inaccessible process metadata are normal outcomes; identities degrade to PipeWire evidence or a stable fallback hash. PID is retained only as runtime diagnostic data.
 

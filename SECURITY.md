@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-Volumix is currently pre-release. Security fixes are made on the latest `main` branch and may be published in a newer alpha. Alpha snapshots are provided for evaluation, not as a supported production release line.
+Fadrio is currently pre-release. Security fixes are made on the latest `main` branch and may be published in a newer alpha. Alpha snapshots are provided for evaluation, not as a supported production release line.
 
 ## Reporting a vulnerability
 

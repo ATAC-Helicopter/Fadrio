@@ -1,6 +1,6 @@
 # Repository rules
 
-`VMX-0017` owns GitHub-side enforcement of this policy. These rules follow the same protected-history intent as VaultSync while matching Volumix's current Linux-only CI and single `main` release spine.
+`FAD-0017` owns GitHub-side enforcement of this policy. These rules follow the same protected-history intent as VaultSync while matching Fadrio's current Linux-only CI and single `main` release spine.
 
 ## Intended `main` ruleset
 
@@ -18,6 +18,6 @@ Pull-request review count and CODEOWNERS approval become required when a second 
 
 ## Current enforcement
 
-As of 2026-09-06, Volumix is public and GitHub ruleset `22393100` actively protects `main`. GitHub reports the branch as protected. Pull requests, resolved review conversations, and strict successful `linux` and `native-sanitizers` checks are required; deletion and non-fast-forward updates are blocked. Administrators retain the documented emergency/recovery bypass.
+As of 2026-09-06, Fadrio is public and GitHub ruleset `22393100` actively protects `main`. GitHub reports the branch as protected. Pull requests, resolved review conversations, and strict successful `linux` and `native-sanitizers` checks are required; deletion and non-fast-forward updates are blocked. Administrators retain the documented emergency/recovery bypass.
 
 The reviewable API payload is [main-ruleset.json](main-ruleset.json). After intentional policy changes, update that file first, apply it through the GitHub rules API, and read the active ruleset back to verify the target, bypass policy, merge method, pull-request requirements, and strict status checks.

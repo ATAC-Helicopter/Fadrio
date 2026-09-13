@@ -1,0 +1,25 @@
+cmake_minimum_required(VERSION 3.20)
+project(fadrio_native VERSION 0.2.0 LANGUAGES C)
+
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(PIPEWIRE REQUIRED IMPORTED_TARGET libpipewire-0.3)
+pkg_check_modules(SPA REQUIRED IMPORTED_TARGET libspa-0.2)
+pkg_check_modules(ALSA REQUIRED IMPORTED_TARGET alsa)
+
+add_library(fadrio_native SHARED src/fadrio_native.c)
+target_include_directories(fadrio_native PUBLIC include)
+target_link_libraries(fadrio_native PRIVATE PkgConfig::PIPEWIRE PkgConfig::SPA PkgConfig::ALSA)
+target_compile_options(fadrio_native PRIVATE -Wall -Wextra -Wpedantic)
+set_target_properties(fadrio_native PROPERTIES OUTPUT_NAME fadrio_native)
+
+include(CTest)
+if(BUILD_TESTING)
+  add_executable(fadrio_native_lifecycle_tests tests/lifecycle_tests.c)
+  target_link_libraries(fadrio_native_lifecycle_tests PRIVATE fadrio_native)
+  target_compile_options(fadrio_native_lifecycle_tests PRIVATE -Wall -Wextra -Wpedantic)
+  add_test(NAME native_lifecycle COMMAND fadrio_native_lifecycle_tests)
+endif()

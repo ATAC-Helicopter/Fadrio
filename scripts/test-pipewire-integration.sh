@@ -10,7 +10,7 @@ for command in pipewire pw-cat dotnet rg; do
     fi
 done
 
-runtime_directory="$(mktemp -d -t volumix-pipewire-XXXXXX)"
+runtime_directory="$(mktemp -d -t fadrio-pipewire-XXXXXX)"
 pipewire_pid=""
 first_stream_pid=""
 second_stream_pid=""
@@ -41,7 +41,7 @@ cp "$(command -v pw-cat)" "$firefox_fixture"
 
 start_pipewire() {
     local log_path="$1"
-    pipewire -c "$repository_root/tests/fixtures/pipewire/volumix-test.conf" \
+    pipewire -c "$repository_root/tests/fixtures/pipewire/fadrio-test.conf" \
         >"$log_path" 2>&1 &
     pipewire_pid=$!
 
@@ -76,8 +76,8 @@ wait_for_pattern() {
 }
 
 run_dotnet() {
-    if [[ -n "${VOLUMIX_SANITIZER_PRELOAD:-}" ]]; then
-        env LD_PRELOAD="$VOLUMIX_SANITIZER_PRELOAD" dotnet "$@"
+    if [[ -n "${FADRIO_SANITIZER_PRELOAD:-}" ]]; then
+        env LD_PRELOAD="$FADRIO_SANITIZER_PRELOAD" dotnet "$@"
     else
         dotnet "$@"
     fi
@@ -138,7 +138,7 @@ sleep 0.25
 assert_process_running "$first_stream_pid" "$runtime_directory/stream-one.log"
 assert_process_running "$second_stream_pid" "$runtime_directory/stream-two.log"
 
-cli_project="$repository_root/src/Volumix.Cli/Volumix.Cli.csproj"
+cli_project="$repository_root/src/Fadrio.Cli/Fadrio.Cli.csproj"
 initial="$(read_apps_until "Sessions: 2")"
 assert_contains "$initial" "Application: Firefox"
 assert_contains "$initial" "Canonical ID: xdg:firefox"
@@ -177,7 +177,7 @@ run_dotnet run --project "$cli_project" --no-build -- apps --watch \
 watcher_pid=$!
 wait_for_pattern "$runtime_directory/watch.log" "Canonical ID: xdg:firefox"
 
-churn_properties='{ application.name = "Volumix Churn Fixture" application.id = "dev.fglabs.Volumix.ChurnFixture" }'
+churn_properties='{ application.name = "Fadrio Churn Fixture" application.id = "dev.fglabs.Fadrio.ChurnFixture" }'
 for index in {1..12}; do
     pw-cat --playback --target 0 --rate 48000 --channels 2 --format s16 --volume 0.1 \
         -P "$churn_properties" - </dev/zero >"$runtime_directory/churn-$index.log" 2>&1 &
@@ -187,7 +187,7 @@ for index in {1..12}; do
     wait "$churn_pid" 2>/dev/null || true
     churn_pid=""
 done
-wait_for_pattern "$runtime_directory/watch.log" "Canonical ID: pipewire:dev.fglabs.volumix.churnfixture"
+wait_for_pattern "$runtime_directory/watch.log" "Canonical ID: pipewire:dev.fglabs.fadrio.churnfixture"
 if ! kill -0 "$watcher_pid" 2>/dev/null; then
     echo "The watching client exited during rapid node churn." >&2
     exit 1
@@ -203,18 +203,18 @@ rm -f -- "$runtime_directory/pipewire-0"
 
 start_pipewire "$runtime_directory/pipewire-restarted.log"
 
-restart_properties='{ application.name = "Volumix Restart Fixture" application.id = "dev.fglabs.Volumix.RestartFixture" }'
+restart_properties='{ application.name = "Fadrio Restart Fixture" application.id = "dev.fglabs.Fadrio.RestartFixture" }'
 pw-cat --playback --target 0 --rate 48000 --channels 2 --format s16 --volume 0.8 \
     -P "$restart_properties" - </dev/zero >"$runtime_directory/stream-restart.log" 2>&1 &
 first_stream_pid=$!
 
-wait_for_pattern "$runtime_directory/watch.log" "Canonical ID: pipewire:dev.fglabs.volumix.restartfixture"
+wait_for_pattern "$runtime_directory/watch.log" "Canonical ID: pipewire:dev.fglabs.fadrio.restartfixture"
 if ! kill -0 "$watcher_pid" 2>/dev/null; then
     echo "The watching client exited instead of reconnecting." >&2
     exit 1
 fi
 
-after_restart="$(read_apps_until "Canonical ID: pipewire:dev.fglabs.volumix.restartfixture")"
+after_restart="$(read_apps_until "Canonical ID: pipewire:dev.fglabs.fadrio.restartfixture")"
 assert_contains "$after_restart" "Sessions: 1"
 if [[ "$(rg -c '^Application:' <<<"$after_restart")" -ne 1 ]]; then
     echo "The rebuilt registry contained duplicate applications:" >&2
@@ -223,12 +223,12 @@ if [[ "$(rg -c '^Application:' <<<"$after_restart")" -ne 1 ]]; then
 fi
 
 run_dotnet run --project "$cli_project" --no-build -- \
-    set pipewire:dev.fglabs.volumix.restartfixture 45 >/dev/null
+    set pipewire:dev.fglabs.fadrio.restartfixture 45 >/dev/null
 after_restart_volume="$(read_apps_until "Volume: 45%")"
 assert_contains "$after_restart_volume" "Sessions: 1"
 
 run_dotnet run --project "$cli_project" --no-build -- \
-    mute pipewire:dev.fglabs.volumix.restartfixture >/dev/null
+    mute pipewire:dev.fglabs.fadrio.restartfixture >/dev/null
 after_restart_mute="$(read_apps_until "Muted: true")"
 assert_contains "$after_restart_mute" "Sessions: 1"
 

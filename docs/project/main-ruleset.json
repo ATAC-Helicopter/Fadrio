@@ -1,5 +1,5 @@
 {
-  "name": "Volumix mainline protection",
+  "name": "Fadrio mainline protection",
   "target": "branch",
   "enforcement": "active",
   "bypass_actors": [

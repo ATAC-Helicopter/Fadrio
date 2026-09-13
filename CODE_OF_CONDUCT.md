@@ -2,7 +2,7 @@
 
 ## Our pledge
 
-We pledge to make participation in Volumix a harassment-free experience for everyone, regardless of age, body size, disability, ethnicity, sex characteristics, gender identity and expression, experience level, education, socioeconomic status, nationality, appearance, race, caste, color, religion, or sexual identity and orientation.
+We pledge to make participation in Fadrio a harassment-free experience for everyone, regardless of age, body size, disability, ethnicity, sex characteristics, gender identity and expression, experience level, education, socioeconomic status, nationality, appearance, race, caste, color, religion, or sexual identity and orientation.
 
 We will act in ways that contribute to an open, welcoming, diverse, inclusive, and healthy community.
 

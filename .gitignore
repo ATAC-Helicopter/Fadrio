@@ -68,7 +68,7 @@ venv/
 !.env.example
 *.log
 *.pid
-.volumix/
+.fadrio/
 
 # Generated packages
 dist/

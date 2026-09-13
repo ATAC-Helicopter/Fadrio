@@ -1,15 +1,15 @@
-# ADR-0001: License Volumix under GPL-3.0-or-later
+# ADR-0001: License Fadrio under GPL-3.0-or-later
 
 - Status: Accepted
 - Date: 2026-09-04
 
 ## Context
 
-Volumix is intended to be a community-developed Linux desktop utility. The technical specification recommends GPL-3.0-or-later while leaving the final choice open before accepting external contributions. The repository now needs an explicit contribution and distribution license.
+Fadrio is intended to be a community-developed Linux desktop utility. The technical specification recommends GPL-3.0-or-later while leaving the final choice open before accepting external contributions. The repository now needs an explicit contribution and distribution license.
 
 ## Decision
 
-License original Volumix source and bundled original assets under GNU General Public License version 3 or, at the recipient's option, any later version. Contributions are accepted under the same terms. Third-party components and runtime-resolved assets retain their own licenses.
+License original Fadrio source and bundled original assets under GNU General Public License version 3 or, at the recipient's option, any later version. Contributions are accepted under the same terms. Third-party components and runtime-resolved assets retain their own licenses.
 
 ## Consequences
 

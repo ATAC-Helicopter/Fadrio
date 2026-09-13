@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate Volumix's canonical work-item identifiers and roadmap ledger."""
+"""Validate Fadrio's canonical work-item identifiers and roadmap ledger."""
 
 from __future__ import annotations
 
@@ -12,13 +12,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 ROADMAP = ROOT / "ROADMAP.md"
 CHANGELOG = ROOT / "CHANGELOG.md"
-ID_PATTERN = re.compile(r"(?:VMX-\d{4}|BUG-\d{5}|REL-\d{5})")
+ID_PATTERN = re.compile(r"(?:FAD-\d{4}|BUG-\d{5}|REL-\d{5})")
 TICKET_PATTERN = re.compile(
-    r"^- \[(?P<done>[ xX])\] `(?P<id>VMX-\d{4}|BUG-\d{5}|REL-\d{5})` "
+    r"^- \[(?P<done>[ xX])\] `(?P<id>FAD-\d{4}|BUG-\d{5}|REL-\d{5})` "
     r"`(?P<priority>P[012])` (?P<title>\S.*)$"
 )
 LEDGER_PATTERN = re.compile(
-    r"^- Next `(?P<family>VMX-[0-9x]+|BUG|REL)`: `(?P<id>VMX-\d{4}|BUG-\d{5}|REL-\d{5})`$"
+    r"^- Next `(?P<family>FAD-[0-9x]+|BUG|REL)`: `(?P<id>FAD-\d{4}|BUG-\d{5}|REL-\d{5})`$"
 )
 
 

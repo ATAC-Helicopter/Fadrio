@@ -43,7 +43,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          version="$(dotnet msbuild src/Volumix.Core/Volumix.Core.csproj -getProperty:Version --nologo)"
+          version="$(dotnet msbuild src/Fadrio.Core/Fadrio.Core.csproj -getProperty:Version --nologo)"
           test "$RELEASE_TAG" = "v$version"
           test -f "docs/releases/$RELEASE_TAG.md"
           grep -Fq "**Tag:** `$RELEASE_TAG`" ROADMAP.md
@@ -81,7 +81,7 @@ jobs:
       - name: Test native lifecycle and PipeWire restart
         run: |
           ctest --test-dir build/native --output-on-failure
-          export VOLUMIX_SANITIZER_PRELOAD="$(gcc -print-file-name=libasan.so):$(gcc -print-file-name=libubsan.so)"
+          export FADRIO_SANITIZER_PRELOAD="$(gcc -print-file-name=libasan.so):$(gcc -print-file-name=libubsan.so)"
           ./scripts/test-pipewire-integration.sh
 
   publish:
@@ -99,8 +99,8 @@ jobs:
         run: |
           set -euo pipefail
           version="${RELEASE_TAG#v}"
-          archive="volumix-$version-source.tar.gz"
-          git archive --format=tar.gz --prefix="volumix-$version/" --output="$archive" "$RELEASE_TAG"
+          archive="fadrio-$version-source.tar.gz"
+          git archive --format=tar.gz --prefix="fadrio-$version/" --output="$archive" "$RELEASE_TAG"
           sha256sum "$archive" > "$archive.sha256"
       - name: Publish GitHub release
         shell: bash
@@ -109,8 +109,8 @@ jobs:
         run: |
           set -euo pipefail
           version="${RELEASE_TAG#v}"
-          archive="volumix-$version-source.tar.gz"
-          args=("$RELEASE_TAG" "$archive" "$archive.sha256" --verify-tag --title "Volumix $version" --notes-file "docs/releases/$RELEASE_TAG.md")
+          archive="fadrio-$version-source.tar.gz"
+          args=("$RELEASE_TAG" "$archive" "$archive.sha256" --verify-tag --title "Fadrio $version" --notes-file "docs/releases/$RELEASE_TAG.md")
           if [[ "$RELEASE_TAG" == *-* ]]; then
             args+=(--prerelease)
           fi

@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>fadrioctl</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Fadrio.Core/Fadrio.Core.csproj" />
+    <ProjectReference Include="../Fadrio.Application/Fadrio.Application.csproj" />
+    <ProjectReference Include="../Fadrio.Infrastructure/Fadrio.Infrastructure.csproj" />
+    <ProjectReference Include="../Fadrio.Platform.Linux/Fadrio.Platform.Linux.csproj" />
+    <ProjectReference Include="../Fadrio.NativeInterop/Fadrio.NativeInterop.csproj" />
+  </ItemGroup>
+</Project>

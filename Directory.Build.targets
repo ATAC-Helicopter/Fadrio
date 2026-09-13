@@ -2,10 +2,10 @@
   <ItemGroup Condition="'$(IsTestProject)' == 'true'">
     <Using Include="Xunit" />
   </ItemGroup>
-  <Target Name="CopyVolumixNativeLibrary"
+  <Target Name="CopyFadrioNativeLibrary"
           AfterTargets="Build"
-          Condition="Exists('$(MSBuildThisFileDirectory)build/native/libvolumix_native.so')">
-    <Copy SourceFiles="$(MSBuildThisFileDirectory)build/native/libvolumix_native.so"
+          Condition="Exists('$(MSBuildThisFileDirectory)build/native/libfadrio_native.so')">
+    <Copy SourceFiles="$(MSBuildThisFileDirectory)build/native/libfadrio_native.so"
           DestinationFolder="$(OutDir)" />
   </Target>
 </Project>
