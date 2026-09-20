@@ -10,11 +10,15 @@ public sealed class ApplicationResolver(
     IDesktopApplicationIndex desktopApplications,
     ISteamApplicationResolver? steamApplications = null,
     IFlatpakApplicationResolver? flatpakApplications = null,
-    ISnapApplicationResolver? snapApplications = null) : IApplicationResolver
+    ISnapApplicationResolver? snapApplications = null) : IApplicationResolver, IApplicationIdentityRevision
 {
     private const int MinimumDesktopScore = 50;
     private const int StrongCandidateScore = 60;
     private const int SafeWinningMargin = 40;
+
+    public long Revision => desktopApplications is IDesktopApplicationIndexRevision revision
+        ? revision.Revision
+        : 0;
 
     public async ValueTask<ApplicationIdentity> ResolveAsync(
         AudioSession session,

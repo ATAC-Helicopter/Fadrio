@@ -41,6 +41,17 @@ public interface IDesktopApplicationIndex
         FindById(snapInstanceName);
 }
 
+public interface IDesktopApplicationIndexRevision
+{
+    long Revision { get; }
+    void Refresh();
+}
+
+public interface IApplicationIdentityRevision
+{
+    long Revision { get; }
+}
+
 public sealed record ResolvedIcon(string Path, string MediaType, int Width, int Height);
 
 public interface ILocalIconResolver
