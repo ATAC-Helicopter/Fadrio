@@ -2,29 +2,64 @@ using Fadrio.Application;
 
 namespace Fadrio.Infrastructure;
 
-public sealed class XdgDesktopApplicationIndex : IDesktopApplicationIndex
+public sealed class XdgDesktopApplicationIndex : IDesktopApplicationIndex, IDesktopApplicationIndexRevision, IDisposable
 {
-    private readonly IReadOnlyList<DesktopApplicationEntry> _entries;
+    private readonly string[] _directories;
+    private readonly FileSystemWatcher[] _watchers;
+    private readonly Timer? _refreshTimer;
+    private readonly object _refreshLock = new();
+    private DesktopApplicationEntry[] _entries = [];
+    private long _revision;
+    private bool _disposed;
 
-    public XdgDesktopApplicationIndex(IEnumerable<string>? applicationDirectories = null)
+    public XdgDesktopApplicationIndex(
+        IEnumerable<string>? applicationDirectories = null,
+        bool watchForChanges = true,
+        TimeSpan? refreshDelay = null)
     {
-        IEnumerable<string> directories = applicationDirectories ?? GetStandardApplicationDirectories();
-        _entries = directories
-            .Where(Directory.Exists)
-            .SelectMany(directory => Directory.EnumerateFiles(directory, "*.desktop", SearchOption.AllDirectories))
-            .Select(TryParse)
-            .Where(entry => entry is not null && !entry.Hidden)
-            .Cast<DesktopApplicationEntry>()
-            .GroupBy(entry => entry.Id, StringComparer.OrdinalIgnoreCase)
-            .Select(group => group.First())
+        _directories = (applicationDirectories ?? GetStandardApplicationDirectories())
+            .Select(Path.GetFullPath)
+            .Distinct(StringComparer.Ordinal)
             .ToArray();
+        Refresh();
+        if (!watchForChanges)
+        {
+            _watchers = [];
+            return;
+        }
+
+        _refreshTimer = new Timer(_ => RefreshSafely(), null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+        TimeSpan delay = refreshDelay ?? TimeSpan.FromMilliseconds(250);
+        _watchers = _directories.Where(Directory.Exists).Select(directory => CreateWatcher(directory, delay)).ToArray();
+    }
+
+    public long Revision => Interlocked.Read(ref _revision);
+
+    public void Refresh()
+    {
+        lock (_refreshLock)
+        {
+            ObjectDisposedException.ThrowIf(_disposed, this);
+            DesktopApplicationEntry[] entries = _directories
+                .Where(Directory.Exists)
+                .SelectMany(EnumerateDesktopFiles)
+                .Select(TryParse)
+                .Where(entry => entry is not null && !entry.Hidden)
+                .Cast<DesktopApplicationEntry>()
+                .GroupBy(entry => entry.Id, StringComparer.OrdinalIgnoreCase)
+                .Select(group => group.First())
+                .ToArray();
+            Interlocked.Exchange(ref _entries, entries);
+            Interlocked.Increment(ref _revision);
+        }
     }
 
     public IReadOnlyList<DesktopApplicationEntry> FindByExecutable(string executablePath)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(executablePath);
         string name = Path.GetFileName(executablePath);
-        DesktopApplicationEntry[] matches = _entries.Where(entry => entry.Executable is not null &&
+        DesktopApplicationEntry[] entries = Volatile.Read(ref _entries);
+        DesktopApplicationEntry[] matches = entries.Where(entry => entry.Executable is not null &&
             (PathEquals(entry.Executable, executablePath) ||
              Path.GetFileName(entry.Executable).Equals(name, StringComparison.OrdinalIgnoreCase)))
             .ToArray();
@@ -46,7 +81,8 @@ public sealed class XdgDesktopApplicationIndex : IDesktopApplicationIndex
         string normalized = desktopFileId.EndsWith(".desktop", StringComparison.OrdinalIgnoreCase)
             ? desktopFileId[..^8]
             : desktopFileId;
-        return _entries
+        DesktopApplicationEntry[] entries = Volatile.Read(ref _entries);
+        return entries
             .Where(entry => entry.Id.Equals(normalized, StringComparison.OrdinalIgnoreCase) ||
                 entry.FlatpakId?.Equals(normalized, StringComparison.OrdinalIgnoreCase) == true)
             .ToArray();
@@ -55,9 +91,28 @@ public sealed class XdgDesktopApplicationIndex : IDesktopApplicationIndex
     public IReadOnlyList<DesktopApplicationEntry> FindBySnapInstanceName(string snapInstanceName)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(snapInstanceName);
-        return _entries
+        DesktopApplicationEntry[] entries = Volatile.Read(ref _entries);
+        return entries
             .Where(entry => entry.SnapInstanceName?.Equals(snapInstanceName, StringComparison.OrdinalIgnoreCase) == true)
             .ToArray();
+    }
+
+    public void Dispose()
+    {
+        lock (_refreshLock)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            _disposed = true;
+            foreach (FileSystemWatcher watcher in _watchers)
+            {
+                watcher.Dispose();
+            }
+            _refreshTimer?.Dispose();
+        }
     }
 
     public static IEnumerable<string> GetStandardApplicationDirectories()
@@ -86,6 +141,68 @@ public sealed class XdgDesktopApplicationIndex : IDesktopApplicationIndex
         catch (UnauthorizedAccessException)
         {
             return null;
+        }
+    }
+
+    private static IEnumerable<string> EnumerateDesktopFiles(string directory)
+    {
+        try
+        {
+            return Directory.EnumerateFiles(directory, "*.desktop", new EnumerationOptions
+            {
+                RecurseSubdirectories = true,
+                IgnoreInaccessible = true,
+                AttributesToSkip = FileAttributes.ReparsePoint
+            }).ToArray();
+        }
+        catch (IOException)
+        {
+            return [];
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return [];
+        }
+    }
+
+    private FileSystemWatcher CreateWatcher(string directory, TimeSpan delay)
+    {
+        var watcher = new FileSystemWatcher(directory, "*.desktop")
+        {
+            IncludeSubdirectories = true,
+            NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.CreationTime
+        };
+        FileSystemEventHandler changed = (_, _) => ScheduleRefresh(delay);
+        RenamedEventHandler renamed = (_, _) => ScheduleRefresh(delay);
+        watcher.Created += changed;
+        watcher.Changed += changed;
+        watcher.Deleted += changed;
+        watcher.Renamed += renamed;
+        watcher.Error += (_, _) => ScheduleRefresh(delay);
+        watcher.EnableRaisingEvents = true;
+        return watcher;
+    }
+
+    private void ScheduleRefresh(TimeSpan delay)
+    {
+        lock (_refreshLock)
+        {
+            if (!_disposed)
+            {
+                _refreshTimer?.Change(delay, Timeout.InfiniteTimeSpan);
+            }
+        }
+    }
+
+    private void RefreshSafely()
+    {
+        try
+        {
+            Refresh();
+        }
+        catch (ObjectDisposedException)
+        {
+            // A queued debounce callback can race disposal.
         }
     }
 

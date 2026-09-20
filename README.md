@@ -27,7 +27,7 @@ Fadrio resolves PipeWire playback nodes into stable logical applications and gro
 
 - Native PipeWire registry connection and playback-node events.
 - Versioned C ABI with copied, serialized managed events.
-- Linux `/proc` and cached XDG desktop-entry identity resolution.
+- Linux `/proc` and automatically refreshed XDG desktop-entry identity resolution.
 - Deterministic multi-evidence scoring with safe conflict fallback.
 - Flatpak-first canonical identity from bounded sandbox metadata and exported desktop entries.
 - Optional Snap identity from corroborated wrapper metadata, without a Snap runtime dependency.

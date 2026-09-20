@@ -8,6 +8,7 @@ public sealed class MixerStateCoordinator(IApplicationResolver resolver)
     private readonly Dictionary<AudioSessionId, ApplicationIdentity> _identities = [];
     private long _generation = -1;
     private long _revision;
+    private long _identityRevision = resolver is IApplicationIdentityRevision source ? source.Revision : 0;
 
     public MixerSnapshot Current { get; private set; } = MixerSnapshot.Empty;
     public event EventHandler<MixerSnapshot>? SnapshotChanged;
@@ -25,6 +26,24 @@ public sealed class MixerStateCoordinator(IApplicationResolver resolver)
             _generation = backendEvent.Generation;
             _sessions.Clear();
             _identities.Clear();
+            _identityRevision = CurrentIdentityRevision();
+        }
+
+        else if (resolver is IApplicationIdentityRevision source && source.Revision != _identityRevision)
+        {
+            long revision = source.Revision;
+            var refreshed = new Dictionary<AudioSessionId, ApplicationIdentity>();
+            foreach ((AudioSessionId id, AudioSession session) in _sessions)
+            {
+                refreshed[id] = await resolver.ResolveAsync(session, cancellationToken).ConfigureAwait(false);
+            }
+
+            foreach ((AudioSessionId id, ApplicationIdentity identity) in refreshed)
+            {
+                _identities[id] = identity;
+            }
+
+            _identityRevision = revision;
         }
 
         switch (backendEvent)
@@ -79,6 +98,9 @@ public sealed class MixerStateCoordinator(IApplicationResolver resolver)
         previous.ProcessBinary != current.ProcessBinary ||
         previous.MediaName != current.MediaName ||
         previous.MediaRole != current.MediaRole;
+
+    private long CurrentIdentityRevision() =>
+        resolver is IApplicationIdentityRevision source ? source.Revision : 0;
 
     private void Publish()
     {

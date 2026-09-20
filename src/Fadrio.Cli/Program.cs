@@ -27,7 +27,7 @@ Console.CancelKeyPress += (_, eventArgs) =>
 try
 {
     await using var backend = new ReconnectingAudioBackend(() => new NativeAudioBackend());
-    var desktopIndex = new XdgDesktopApplicationIndex();
+    using var desktopIndex = new XdgDesktopApplicationIndex();
     var resolver = new ApplicationResolver(new LinuxProcMetadataProvider(), desktopIndex,
         new SteamApplicationResolver(new SteamApplicationIndex()),
         new FlatpakApplicationResolver(desktopIndex),

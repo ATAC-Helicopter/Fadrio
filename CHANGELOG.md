@@ -4,6 +4,16 @@ All notable changes will be documented here. The format follows [Keep a Changelo
 
 ## [Unreleased]
 
+### Added
+
+- `FAD-0202` Secure local PNG icon resolution with trusted XDG roots, bounded caching, and traversal, symlink, malformed-file, and size protections.
+- `FAD-0203` Flatpak-first canonical identity from bounded sandbox metadata and exported host desktop entries.
+- `FAD-0204` Optional Snap identity from corroborated wrapper metadata without invoking or depending on Snap tooling.
+
+### Changed
+
+- `FAD-0205` XDG desktop-entry snapshots now refresh after debounced filesystem changes, advance a monotonic identity revision, and re-resolve active sessions once through the serialized mixer coordinator.
+
 ## [0.2.0-alpha.2] - 2026-09-13
 
 ### Changed

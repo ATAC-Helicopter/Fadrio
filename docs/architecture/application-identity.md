@@ -20,6 +20,8 @@ Snap identity is secondary and has no runtime dependency on the `snap` command. 
 
 Desktop candidates receive fixed weights for exact executable paths, executable basenames, application IDs, and icon IDs. Scores are accumulated by canonical desktop ID and candidates are ordered deterministically. Agreeing independent evidence raises confidence. When two strong candidates remain too close, the resolver records `ConflictingEvidence` and falls back to the stable executable or PipeWire identity instead of choosing a desktop application. Scores and rejected conflicts remain inspectable in the evidence list.
 
+The XDG desktop-entry index publishes immutable snapshots and watches existing application directories for create, change, rename, delete, and watcher-error notifications. Changes are debounced before rebuilding the index. Each successful rebuild advances a monotonic revision; the mixer coordinator observes that revision and re-resolves each current session once on its next serialized backend event. Watcher callbacks never mutate mixer state directly.
+
 M0.2 implements the Steam resolver seam. Relevant Wine/Windows processes supply a bounded allowlist of environment evidence. A cached index discovers libraries through `libraryfolders.vdf` and reads installed app manifests. Agreeing numeric Steam IDs, an indexed compatibility directory, and an installed manifest produce `steam:<app-id>` at High confidence. Conflicts or missing evidence fall back to the ordinary resolver. The index refreshes when the CLI is restarted; automatic refresh and broader Wine/native Steam coverage remain in milestone 0.4.
 
 Resolver changes require synthetic fixture tests and must preserve existing user mappings once persistence exists.

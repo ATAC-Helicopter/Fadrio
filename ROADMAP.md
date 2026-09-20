@@ -145,7 +145,9 @@ Canonical ticket format:
 - [x] `FAD-0204` `P2` Add Snap wrapper identity without making Snap a dependency.
   - Scope: retain only allowlisted Snap process variables, require the package name to agree with its mounted `/snap/<name>/` root, enrich from exported `X-SnapInstanceName` desktop metadata, and prefer stable `snap:<instance>` identity without invoking Snap tooling.
   - Acceptance: fixtures cover ordinary and parallel-instance identities, desktop metadata, secret exclusion, contradictory-root fallback, and operation without Snap installed.
-- [ ] `FAD-0205` `P1` Add resolver cache invalidation and desktop-index refresh watching.
+- [x] `FAD-0205` `P1` Add resolver cache invalidation and desktop-index refresh watching.
+  - Scope: publish atomic XDG desktop-entry snapshots, debounce filesystem notifications, expose monotonic identity revisions, and re-resolve current sessions once when a new revision is observed.
+  - Acceptance: create, change, delete, refresh, disposal, failure-retry, and revision-initialization tests pass without watcher callbacks mutating mixer state directly.
 - [ ] `FAD-0206` `P1` Add inspectable advanced identity/session diagnostics.
 - [ ] `REL-00003` `P0` Qualify one-row Firefox identity, icons, ambiguity safety, and fallback behavior.
 
