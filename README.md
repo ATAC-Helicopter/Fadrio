@@ -21,7 +21,7 @@
 Fadrio resolves PipeWire playback nodes into stable logical applications and groups every session owned by an application behind one mixer target. Three browser streams should look like one **Brave** or **Firefox** control—not three nodes, renderer processes, or PIDs.
 
 > [!IMPORTANT]
-> Fadrio is a source-only public alpha, not an end-user release. No supported binary package is published yet. Packaging, persistence, MIDI control, and the finished interface are not implemented. Initial Steam/Proton identification requires corroborating local process, compatibility-directory, and installed-manifest evidence.
+> Fadrio is a source-only public alpha, not an end-user release. No supported binary package is published yet. Basic identity persistence and live application controls exist, but durable mixer policies, MIDI control, output control, and the finished interface are not implemented. Initial Steam/Proton identification requires corroborating local process, compatibility-directory, and installed-manifest evidence.
 
 ## What works today
 
@@ -35,7 +35,7 @@ Fadrio resolves PipeWire playback nodes into stable logical applications and gro
 - Stable fallback identities that never use PID.
 - Multi-session application grouping and application-wide volume/mute commands.
 - Managed reconnect supervision with generation isolation.
-- Diagnostic CLI and minimal Avalonia shell.
+- Diagnostic CLI, SQLite-backed identity overrides, and the first live Avalonia application rows with volume and mute controls.
 
 ## Architecture
 
@@ -88,6 +88,10 @@ dotnet run --project src/Fadrio.Cli -- profile clear xdg:firefox
 ```
 
 The override appears in subsequent `apps` output while the canonical ID remains unchanged.
+
+Launch the in-development mixer with `dotnet run --project src/Fadrio.UI`. Its application rows reflect the live PipeWire snapshot and use the same application-wide volume/mute command path as the CLI. Output-device controls, icons, tray behavior, and UI polish remain on the roadmap.
+
+[See the first live-row screenshot](docs/screenshots/fad-0501-live-fixture.png), captured with a controlled, silent PipeWire fixture rather than a user's applications.
 
 Exercise the shared M0 command path:
 

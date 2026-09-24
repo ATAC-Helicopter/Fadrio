@@ -12,13 +12,34 @@
         WindowStartupLocation="CenterScreen">
   <ScrollViewer VerticalScrollBarVisibility="Auto">
     <StackPanel Margin="24" Spacing="12">
-      <TextBlock Text="{Binding Title}" FontSize="20" FontWeight="SemiBold" />
+      <TextBlock Text="{Binding Title}" FontSize="24" FontWeight="SemiBold" />
+      <TextBlock Text="{Binding Status}" FontSize="12" Opacity="0.7" />
       <Separator />
       <TextBlock Text="{Binding OutputHeading}" FontSize="12" FontWeight="SemiBold" />
       <TextBlock Text="{Binding EmptyOutputMessage}" Opacity="0.7" />
       <Separator Margin="0,8" />
       <TextBlock Text="{Binding ApplicationsHeading}" FontSize="12" FontWeight="SemiBold" />
-      <TextBlock Text="{Binding EmptyApplicationsMessage}" TextWrapping="Wrap" Opacity="0.7" />
+      <TextBlock Text="{Binding EmptyApplicationsMessage}" IsVisible="{Binding HasNoApplications}" TextWrapping="Wrap" Opacity="0.7" />
+      <ItemsControl ItemsSource="{Binding Applications}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:ApplicationRowViewModel">
+            <Border Padding="12" Margin="0,0,0,8" CornerRadius="10" Background="{DynamicResource SystemControlBackgroundBaseLowBrush}">
+              <StackPanel Spacing="6">
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                  <TextBlock Grid.Column="1" Text="{Binding VolumeLabel}" Margin="8,0,0,0" />
+                </Grid>
+                <Slider Minimum="0" Maximum="100" Value="{Binding Volume, Mode=TwoWay}"
+                        IsEnabled="{Binding CanControl}" Name="VolumeSlider"
+                        AutomationProperties.Name="{Binding VolumeControlLabel}" />
+                <Button Content="{Binding MuteLabel}" Command="{Binding ToggleMuteCommand}"
+                        IsEnabled="{Binding CanControl}" HorizontalAlignment="Left"
+                        AutomationProperties.Name="{Binding MuteControlLabel}" />
+              </StackPanel>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
     </StackPanel>
   </ScrollViewer>
 </Window>

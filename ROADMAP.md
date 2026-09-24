@@ -179,7 +179,7 @@ Canonical ticket format:
 
 ## 0.5 — UI alpha
 
-- [ ] `FAD-0501` `P0` Connect immutable mixer snapshots and commands to the Avalonia view models.
+- [x] `FAD-0501` `P0` Connect immutable mixer snapshots and commands to the Avalonia view models.
 - [ ] `FAD-0502` `P1` Build accessible output and logical-application rows with mixed-volume state.
 - [ ] `FAD-0503` `P1` Add stable sorting, interaction freeze, empty, unavailable, and reconnect states.
 - [ ] `FAD-0504` `P1` Implement tray popup, single-instance activation, and clean shutdown.
