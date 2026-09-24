@@ -157,7 +157,9 @@ Canonical ticket format:
 
 ## 0.3 — Persistence
 
-- [ ] `FAD-0301` `P0` Implement XDG data paths, SQLite bootstrap, and deterministic migrations.
+- [x] `FAD-0301` `P0` Implement XDG data paths, SQLite bootstrap, and deterministic migrations.
+  - Scope: resolve config/data/cache/state directories from absolute XDG overrides or user-home fallbacks; initialize the per-user SQLite database on app startup; record versioned SQL migrations and checksums.
+  - Acceptance: fresh and repeat startup preserve settings, unsupported future schemas fail without changes, and a failed migration rolls back its history; managed/native validation passes.
 - [ ] `FAD-0302` `P1` Persist application identity evidence and user overrides without raw sensitive process context.
 - [ ] `FAD-0303` `P1` Implement pin, hide, ordering, and inactive-stream grace behavior.
 - [ ] `FAD-0304` `P0` Implement remembered/fixed/follow-current volume policies with confidence safeguards.
