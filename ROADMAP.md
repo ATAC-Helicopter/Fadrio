@@ -148,7 +148,9 @@ Canonical ticket format:
 - [x] `FAD-0205` `P1` Add resolver cache invalidation and desktop-index refresh watching.
   - Scope: publish atomic XDG desktop-entry snapshots, debounce filesystem notifications, expose monotonic identity revisions, and re-resolve current sessions once when a new revision is observed.
   - Acceptance: create, change, delete, refresh, disposal, failure-retry, and revision-initialization tests pass without watcher callbacks mutating mixer state directly.
-- [ ] `FAD-0206` `P1` Add inspectable advanced identity/session diagnostics.
+- [x] `FAD-0206` `P1` Add inspectable advanced identity/session diagnostics.
+  - Scope: add an explicit CLI inspector for canonical identity, resolver evidence, and raw per-session audio details; keep raw node and process information out of the ordinary application list; support share-safe redaction.
+  - Acceptance: deterministic renderer tests cover identity evidence, session ordering, sensitive-value redaction, and hostile control characters; the full managed/native validation pipeline passes.
 - [ ] `REL-00003` `P0` Qualify one-row Firefox identity, icons, ambiguity safety, and fallback behavior.
 
 ## 0.3 — Persistence

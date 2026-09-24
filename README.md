@@ -70,6 +70,15 @@ Inspect current logical applications:
 dotnet run --project src/Fadrio.Cli -- apps --watch
 ```
 
+Inspect one application's resolver evidence and raw audio sessions explicitly:
+
+```bash
+dotnet run --project src/Fadrio.Cli -- inspect xdg:org.mozilla.firefox
+dotnet run --project src/Fadrio.Cli -- inspect xdg:org.mozilla.firefox --redacted
+```
+
+Use `--redacted` before sharing output. The ordinary application list intentionally omits process IDs and raw node details.
+
 Exercise the shared M0 command path:
 
 ```bash

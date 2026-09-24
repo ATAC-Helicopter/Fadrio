@@ -11,6 +11,7 @@
   <Folder Name="/tests/">
     <Project Path="tests/Fadrio.Core.Tests/Fadrio.Core.Tests.csproj" />
     <Project Path="tests/Fadrio.Application.Tests/Fadrio.Application.Tests.csproj" />
+    <Project Path="tests/Fadrio.Cli.Tests/Fadrio.Cli.Tests.csproj" />
     <Project Path="tests/Fadrio.Infrastructure.Tests/Fadrio.Infrastructure.Tests.csproj" />
     <Project Path="tests/Fadrio.Platform.Linux.Tests/Fadrio.Platform.Linux.Tests.csproj" />
     <Project Path="tests/Fadrio.NativeInterop.Tests/Fadrio.NativeInterop.Tests.csproj" />
