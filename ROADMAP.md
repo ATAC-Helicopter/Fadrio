@@ -160,7 +160,9 @@ Canonical ticket format:
 - [x] `FAD-0301` `P0` Implement XDG data paths, SQLite bootstrap, and deterministic migrations.
   - Scope: resolve config/data/cache/state directories from absolute XDG overrides or user-home fallbacks; initialize the per-user SQLite database on app startup; record versioned SQL migrations and checksums.
   - Acceptance: fresh and repeat startup preserve settings, unsupported future schemas fail without changes, and a failed migration rolls back its history; managed/native validation passes.
-- [ ] `FAD-0302` `P1` Persist application identity evidence and user overrides without raw sensitive process context.
+- [x] `FAD-0302` `P1` Persist application identity evidence and user overrides without raw sensitive process context.
+  - Scope: migration 2 stores stable application identities, allowlisted desktop/sandbox evidence, and custom name/icon choices; executable-path fallback IDs use opaque keys and do not persist their resolved process or media context.
+  - Acceptance: user choices survive resolver metadata refresh and restart, clear restores resolved presentation, and isolated PipeWire integration shows a named override in the live CLI row.
 - [ ] `FAD-0303` `P1` Implement pin, hide, ordering, and inactive-stream grace behavior.
 - [ ] `FAD-0304` `P0` Implement remembered/fixed/follow-current volume policies with confidence safeguards.
 - [ ] `FAD-0305` `P0` Add migration backups, corruption failure behavior, and upgrade tests.

@@ -13,6 +13,26 @@ public sealed class FadrioDatabase(string databasePath)
                 key TEXT NOT NULL PRIMARY KEY,
                 value TEXT NOT NULL
             );
+            """),
+        new(2, "application-identity-and-overrides", """
+            CREATE TABLE applications (
+                id TEXT NOT NULL PRIMARY KEY,
+                display_name TEXT NULL,
+                confidence INTEGER NULL,
+                desktop_file_id TEXT NULL,
+                flatpak_id TEXT NULL,
+                snap_id TEXT NULL,
+                steam_app_id TEXT NULL,
+                custom_name TEXT NULL,
+                custom_icon TEXT NULL
+            );
+            CREATE TABLE application_evidence (
+                application_id TEXT NOT NULL,
+                kind INTEGER NOT NULL,
+                value TEXT NOT NULL,
+                PRIMARY KEY (application_id, kind, value),
+                FOREIGN KEY (application_id) REFERENCES applications (id) ON DELETE CASCADE
+            );
             """)
     ];
 

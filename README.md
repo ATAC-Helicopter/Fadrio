@@ -79,6 +79,16 @@ dotnet run --project src/Fadrio.Cli -- inspect xdg:org.mozilla.firefox --redacte
 
 Use `--redacted` before sharing output. The ordinary application list intentionally omits process IDs and raw node details.
 
+Application names and icons can be overridden persistently from the CLI:
+
+```bash
+dotnet run --project src/Fadrio.Cli -- profile name xdg:firefox "My browser"
+dotnet run --project src/Fadrio.Cli -- profile icon xdg:firefox firefox
+dotnet run --project src/Fadrio.Cli -- profile clear xdg:firefox
+```
+
+The override appears in subsequent `apps` output while the canonical ID remains unchanged.
+
 Exercise the shared M0 command path:
 
 ```bash
