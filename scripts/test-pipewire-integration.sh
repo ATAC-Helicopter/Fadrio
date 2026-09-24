@@ -147,6 +147,15 @@ assert_contains "$initial" "Icon: firefox"
 assert_contains "$initial" "Volume: 100%"
 
 run_dotnet run --project "$cli_project" --no-build -- \
+    profile name xdg:firefox "Browser Override" >/dev/null
+with_override="$(read_apps_until "Application: Browser Override")"
+assert_contains "$with_override" "Canonical ID: xdg:firefox"
+run_dotnet run --project "$cli_project" --no-build -- \
+    profile clear xdg:firefox >/dev/null
+after_clear="$(read_apps_until "Application: Firefox")"
+assert_contains "$after_clear" "Canonical ID: xdg:firefox"
+
+run_dotnet run --project "$cli_project" --no-build -- \
     set xdg:firefox 35 >/dev/null
 after_volume="$(read_apps_until "Volume: 35%")"
 assert_contains "$after_volume" "Sessions: 2"

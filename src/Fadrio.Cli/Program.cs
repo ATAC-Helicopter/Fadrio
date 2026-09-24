@@ -5,7 +5,7 @@ using Fadrio.NativeInterop;
 using Fadrio.Platform.Linux;
 
 string command = args.FirstOrDefault() ?? "apps";
-if (command is not ("apps" or "inspect" or "set" or "mute" or "unmute"))
+if (command is not ("apps" or "inspect" or "set" or "mute" or "unmute" or "profile"))
 {
     PrintUsage();
     return 2;
@@ -15,7 +15,10 @@ bool watch = command == "apps" && args.Contains("--watch", StringComparer.Ordina
 if ((command == "set" && args.Length != 3) ||
     (command is "mute" or "unmute" && args.Length != 2) ||
     (command == "inspect" && (args.Length is < 2 or > 3 ||
-        (args.Length == 3 && args[2] != "--redacted"))))
+        (args.Length == 3 && args[2] != "--redacted"))) ||
+    (command == "profile" && (args.Length is < 3 or > 4 ||
+        (args[1] is not ("name" or "icon" or "clear")) ||
+        (args[1] == "clear" ? args.Length != 3 : args.Length != 4))))
 {
     PrintUsage();
     return 2;
@@ -29,12 +32,32 @@ Console.CancelKeyPress += (_, eventArgs) =>
 };
 try
 {
+    var database = new FadrioDatabase(FadrioDataPaths.Resolve().DatabasePath);
+    if (command == "profile")
+    {
+        database.Initialize();
+        var profiles = new ApplicationIdentityStore(database);
+        var id = new Fadrio.Core.ApplicationId(args[2]);
+        StoredApplicationIdentity? current = profiles.Read(id);
+        string? name = args[1] == "name" ? args[3] : current?.CustomName;
+        string? icon = args[1] == "icon" ? args[3] : current?.CustomIcon;
+        profiles.SetOverride(id, args[1] == "clear" ? null : name,
+            args[1] == "clear" ? null : icon);
+        Console.WriteLine($"Saved presentation override for {id}.");
+        return 0;
+    }
+
     await using var backend = new ReconnectingAudioBackend(() => new NativeAudioBackend());
     using var desktopIndex = new XdgDesktopApplicationIndex();
-    var resolver = new ApplicationResolver(new LinuxProcMetadataProvider(), desktopIndex,
+    IApplicationResolver resolver = new ApplicationResolver(new LinuxProcMetadataProvider(), desktopIndex,
         new SteamApplicationResolver(new SteamApplicationIndex()),
         new FlatpakApplicationResolver(desktopIndex),
         new SnapApplicationResolver(desktopIndex));
+    if (File.Exists(database.DatabasePath))
+    {
+        database.Initialize();
+        resolver = new PersistentApplicationResolver(resolver, new ApplicationIdentityStore(database));
+    }
     var coordinator = new MixerStateCoordinator(resolver);
     if (watch)
     {
@@ -118,6 +141,9 @@ static void PrintUsage()
     Console.Error.WriteLine("  fadrioctl set <canonical-id> <0-100>");
     Console.Error.WriteLine("  fadrioctl mute <canonical-id>");
     Console.Error.WriteLine("  fadrioctl unmute <canonical-id>");
+    Console.Error.WriteLine("  fadrioctl profile name <canonical-id> <custom-name>");
+    Console.Error.WriteLine("  fadrioctl profile icon <canonical-id> <custom-icon>");
+    Console.Error.WriteLine("  fadrioctl profile clear <canonical-id>");
 }
 
 static async Task IgnoreCancellationAsync(Task task)

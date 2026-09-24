@@ -36,15 +36,15 @@ public sealed class FadrioPersistenceTests : IDisposable
 
         using (SqliteConnection connection = Open(database.DatabasePath))
         {
-            Assert.Equal(1L, ScalarLong(connection, "SELECT COUNT(*) FROM schema_migrations;"));
-            Assert.Equal(1L, ScalarLong(connection, "SELECT version FROM schema_migrations;"));
+            Assert.Equal(2L, ScalarLong(connection, "SELECT COUNT(*) FROM schema_migrations;"));
+            Assert.Equal(2L, ScalarLong(connection, "SELECT MAX(version) FROM schema_migrations;"));
             Execute(connection, "INSERT INTO settings (key, value) VALUES ('theme', 'dark');");
         }
 
         database.Initialize();
 
         using SqliteConnection reopened = Open(database.DatabasePath);
-        Assert.Equal(1L, ScalarLong(reopened, "SELECT COUNT(*) FROM schema_migrations;"));
+        Assert.Equal(2L, ScalarLong(reopened, "SELECT COUNT(*) FROM schema_migrations;"));
         using var command = reopened.CreateCommand();
         command.CommandText = "SELECT value FROM settings WHERE key = 'theme';";
         Assert.Equal("dark", command.ExecuteScalar());
@@ -63,7 +63,7 @@ public sealed class FadrioPersistenceTests : IDisposable
         Assert.Throws<InvalidDataException>(database.Initialize);
 
         using SqliteConnection reopened = Open(database.DatabasePath);
-        Assert.Equal(2L, ScalarLong(reopened, "SELECT COUNT(*) FROM schema_migrations;"));
+        Assert.Equal(3L, ScalarLong(reopened, "SELECT COUNT(*) FROM schema_migrations;"));
     }
 
     [Fact]
@@ -81,6 +81,27 @@ public sealed class FadrioPersistenceTests : IDisposable
 
         using SqliteConnection reopened = Open(database.DatabasePath);
         using var command = reopened.CreateCommand();
+        command.CommandText = "SELECT value FROM settings WHERE key = 'theme';";
+        Assert.Equal("dark", command.ExecuteScalar());
+    }
+
+    [Fact]
+    public void UpgradingFromBootstrapSchemaPreservesExistingSettings()
+    {
+        var database = new FadrioDatabase(Path.Combine(_root, "upgrade", "fadrio.db"));
+        database.Initialize();
+        using (SqliteConnection connection = Open(database.DatabasePath))
+        {
+            Execute(connection, "INSERT INTO settings (key, value) VALUES ('theme', 'dark');");
+            Execute(connection, "DROP TABLE application_evidence; DROP TABLE applications;");
+            Execute(connection, "DELETE FROM schema_migrations WHERE version = 2;");
+        }
+
+        database.Initialize();
+
+        using SqliteConnection upgraded = Open(database.DatabasePath);
+        Assert.Equal(2L, ScalarLong(upgraded, "SELECT COUNT(*) FROM schema_migrations;"));
+        using var command = upgraded.CreateCommand();
         command.CommandText = "SELECT value FROM settings WHERE key = 'theme';";
         Assert.Equal("dark", command.ExecuteScalar());
     }
