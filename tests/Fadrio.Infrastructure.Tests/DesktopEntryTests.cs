@@ -33,6 +33,26 @@ public sealed class DesktopEntryTests
     }
 
     [Fact]
+    public void IndexMatchesCommonBinRuntimeSuffixWithoutDiscardingAmbiguity()
+    {
+        using var directory = new TemporaryDirectory();
+        File.WriteAllText(
+            System.IO.Path.Combine(directory.Path, "firefox.desktop"),
+            DesktopEntry("Firefox", "/usr/bin/firefox"));
+        File.WriteAllText(
+            System.IO.Path.Combine(directory.Path, "hidden-firefox.desktop"),
+            DesktopEntry("Hidden Firefox", "/usr/lib/firefox/firefox-bin", noDisplay: true));
+        using var index = new XdgDesktopApplicationIndex([directory.Path], watchForChanges: false);
+
+        IReadOnlyList<Fadrio.Application.DesktopApplicationEntry> matches =
+            index.FindByExecutable("/usr/lib/firefox/firefox-bin");
+
+        Assert.Equal(2, matches.Count);
+        Assert.Contains(matches, entry => entry.Id == "firefox");
+        Assert.Contains(matches, entry => entry.Id == "hidden-firefox");
+    }
+
+    [Fact]
     public void IndexMatchesDesktopIdWithOrWithoutSuffix()
     {
         using var index = new XdgDesktopApplicationIndex([Fixtures], watchForChanges: false);
@@ -135,8 +155,9 @@ public sealed class DesktopEntryTests
         Assert.Throws<ObjectDisposedException>(index.Refresh);
     }
 
-    private static string DesktopEntry(string name, string executable) =>
-        $"[Desktop Entry]{Environment.NewLine}Name={name}{Environment.NewLine}Exec={executable}{Environment.NewLine}";
+    private static string DesktopEntry(string name, string executable, bool noDisplay = false) =>
+        $"[Desktop Entry]{Environment.NewLine}Name={name}{Environment.NewLine}Exec={executable}{Environment.NewLine}" +
+        $"NoDisplay={noDisplay.ToString().ToLowerInvariant()}{Environment.NewLine}";
 
     private static async Task WaitForRevisionAsync(
         XdgDesktopApplicationIndex index,

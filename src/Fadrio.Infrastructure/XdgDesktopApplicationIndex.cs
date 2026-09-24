@@ -61,7 +61,7 @@ public sealed class XdgDesktopApplicationIndex : IDesktopApplicationIndex, IDesk
         DesktopApplicationEntry[] entries = Volatile.Read(ref _entries);
         DesktopApplicationEntry[] matches = entries.Where(entry => entry.Executable is not null &&
             (PathEquals(entry.Executable, executablePath) ||
-             Path.GetFileName(entry.Executable).Equals(name, StringComparison.OrdinalIgnoreCase)))
+             ExecutableNamesMatch(Path.GetFileName(entry.Executable), name)))
             .ToArray();
         DesktopApplicationEntry[] visible = matches.Where(entry => !entry.NoDisplay).ToArray();
         // A hidden URL handler can share its application's executable and icon.
@@ -209,4 +209,10 @@ public sealed class XdgDesktopApplicationIndex : IDesktopApplicationIndex, IDesk
     private static bool PathEquals(string left, string right) =>
         Path.IsPathRooted(left) && Path.IsPathRooted(right) &&
         Path.GetFullPath(left).Equals(Path.GetFullPath(right), StringComparison.Ordinal);
+
+    private static bool ExecutableNamesMatch(string left, string right) =>
+        NormalizeExecutableName(left).Equals(NormalizeExecutableName(right), StringComparison.OrdinalIgnoreCase);
+
+    private static string NormalizeExecutableName(string value) =>
+        value.EndsWith("-bin", StringComparison.OrdinalIgnoreCase) ? value[..^4] : value;
 }

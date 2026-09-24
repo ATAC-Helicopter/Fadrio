@@ -64,6 +64,85 @@ public sealed class FirefoxIdentityQualificationTests
         Assert.Equal([71u, 73u], recreated.Sessions.Select(session => session.PipeWireNodeId).Order());
     }
 
+    [Fact]
+    public async Task VisibleFirefoxLauncherWinsOverExactHiddenHelperForBinRuntime()
+    {
+        using var directory = new TemporaryDirectory();
+        directory.WriteDesktop("firefox.desktop", "Firefox", "/usr/bin/firefox", "firefox", noDisplay: false);
+        directory.WriteDesktop(
+            "userapp-Firefox-NTRKV3.desktop",
+            "Firefox",
+            "/usr/lib/firefox/firefox-bin",
+            icon: null,
+            noDisplay: true);
+        using var index = new XdgDesktopApplicationIndex([directory.Path], watchForChanges: false);
+        var resolver = new ApplicationResolver(
+            new FixtureProcessProvider(new Dictionary<int, ProcessMetadata>
+            {
+                [4201] = new(4201, "/usr/lib/firefox/firefox-bin", ["firefox-bin"]),
+                [4202] = new(4202, "/usr/lib/firefox/firefox-bin", ["firefox-bin"])
+            }),
+            index);
+        var coordinator = new MixerStateCoordinator(resolver);
+
+        await coordinator.ApplyAsync(
+            new SessionAdded(1, LiveFirefoxSession("one", 81, 4201)),
+            TestContext.Current.CancellationToken);
+        await coordinator.ApplyAsync(
+            new SessionAdded(1, LiveFirefoxSession("two", 82, 4202)),
+            TestContext.Current.CancellationToken);
+
+        RuntimeApplication firefox = Assert.Single(coordinator.Current.Applications);
+        Assert.Equal(new ApplicationId("xdg:firefox"), firefox.Identity.Id);
+        Assert.Equal("firefox", firefox.Identity.Icon?.Value);
+        Assert.Equal(IdentityConfidence.High, firefox.Identity.Confidence);
+        Assert.Equal(2, firefox.Sessions.Count);
+    }
+
+    [Fact]
+    public async Task MultipleVisibleFirefoxCandidatesFallBackInsteadOfGuessing()
+    {
+        using var directory = new TemporaryDirectory();
+        directory.WriteDesktop("firefox.desktop", "Firefox", "/usr/bin/firefox", "firefox", noDisplay: false);
+        directory.WriteDesktop("firefox-alt.desktop", "Alternate Firefox", "/opt/firefox", "firefox-alt", noDisplay: false);
+        using var index = new XdgDesktopApplicationIndex([directory.Path], watchForChanges: false);
+        var resolver = new ApplicationResolver(
+            new FixtureProcessProvider(new Dictionary<int, ProcessMetadata>
+            {
+                [4301] = new(4301, "/usr/lib/firefox/firefox-bin", ["firefox-bin"])
+            }),
+            index);
+
+        ApplicationIdentity identity = await resolver.ResolveAsync(
+            LiveFirefoxSession("ambiguous", 91, 4301),
+            TestContext.Current.CancellationToken);
+
+        Assert.Equal(new ApplicationId("exe:/usr/lib/firefox/firefox-bin"), identity.Id);
+        Assert.Equal(IdentityConfidence.Medium, identity.Confidence);
+        Assert.Contains(identity.Evidence, evidence => evidence.Kind == IdentityEvidenceKind.ConflictingEvidence);
+    }
+
+    [Fact]
+    public async Task MissingDesktopMetadataFallsBackToStableExecutableIdentity()
+    {
+        using var directory = new TemporaryDirectory();
+        using var index = new XdgDesktopApplicationIndex([directory.Path], watchForChanges: false);
+        var resolver = new ApplicationResolver(
+            new FixtureProcessProvider(new Dictionary<int, ProcessMetadata>
+            {
+                [4401] = new(4401, "/usr/lib/firefox/firefox-bin", ["firefox-bin"])
+            }),
+            index);
+
+        ApplicationIdentity identity = await resolver.ResolveAsync(
+            LiveFirefoxSession("fallback", 101, 4401),
+            TestContext.Current.CancellationToken);
+
+        Assert.Equal(new ApplicationId("exe:/usr/lib/firefox/firefox-bin"), identity.Id);
+        Assert.Equal("firefox-bin", identity.DisplayName);
+        Assert.Equal(IdentityConfidence.Medium, identity.Confidence);
+    }
+
     private static AudioSession FirefoxSession(string id, uint nodeId, int processId, string mediaName) => new()
     {
         Id = new(id),
@@ -75,6 +154,18 @@ public sealed class FirefoxIdentityQualificationTests
         ProcessBinary = "firefox",
         MediaName = mediaName,
         MediaRole = "Music",
+        Volume = 1f,
+        Active = true,
+    };
+
+    private static AudioSession LiveFirefoxSession(string id, uint nodeId, int processId) => new()
+    {
+        Id = new(id),
+        PipeWireNodeId = nodeId,
+        ProcessId = processId,
+        ApplicationName = "Firefox",
+        ProcessBinary = "firefox-bin",
+        MediaName = "AudioStream",
         Volume = 1f,
         Active = true,
     };
@@ -120,5 +211,33 @@ public sealed class FirefoxIdentityQualificationTests
         }
 
         public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+    }
+
+    private sealed class TemporaryDirectory : IDisposable
+    {
+        public TemporaryDirectory()
+        {
+            Path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"fadrio-firefox-{Guid.NewGuid():N}");
+            Directory.CreateDirectory(Path);
+        }
+
+        public string Path { get; }
+
+        public void WriteDesktop(
+            string fileName,
+            string name,
+            string executable,
+            string? icon,
+            bool noDisplay)
+        {
+            string iconLine = icon is null ? string.Empty : $"Icon={icon}{Environment.NewLine}";
+            File.WriteAllText(
+                System.IO.Path.Combine(Path, fileName),
+                $"[Desktop Entry]{Environment.NewLine}Name={name}{Environment.NewLine}" +
+                $"Exec={executable}{Environment.NewLine}{iconLine}" +
+                $"NoDisplay={noDisplay.ToString().ToLowerInvariant()}{Environment.NewLine}");
+        }
+
+        public void Dispose() => Directory.Delete(Path, recursive: true);
     }
 }
