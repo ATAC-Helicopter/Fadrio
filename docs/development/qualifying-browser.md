@@ -1,6 +1,6 @@
 # Qualifying browser identity
 
-`FAD-0012` qualifies browser multi-stream identity. Firefox-shaped fixtures retain deterministic coverage, while the real-browser observation uses the Brave installation available on the development host.
+`FAD-0012` qualifies browser multi-stream identity. Firefox-shaped fixtures retain deterministic coverage, and `REL-00003` adds a real Firefox observation plus explicit ambiguity and fallback cases.
 
 ## Automated evidence
 
@@ -35,6 +35,23 @@ The following observation passed on 2026-09-04:
 - starting a replacement profile restored two sessions under the same canonical ID.
 
 The fixture creates no network request and uses a very low-gain oscillator. Qualification output excludes runtime PIDs, profile paths, private browsing data, media titles, full command lines, and environment dumps.
+
+## Real Firefox observation
+
+The following observation passed on 2026-09-24:
+
+- Zorin OS 18.1, Wayland GNOME session;
+- Firefox 156.0.1 from the system package;
+- PipeWire 1.0.5;
+- two isolated Firefox profiles playing the repository's local low-gain Web Audio fixture;
+- one `Firefox` application with canonical ID `xdg:firefox`, High confidence, the installed `firefox` icon, and two sessions;
+- the real `/usr/lib/firefox/firefox-bin` runtime was reconciled with the visible `firefox.desktop` launcher;
+- a hidden user-created launcher with an exact runtime path did not displace the visible application identity;
+- setting volume to 35%, muting, and unmuting reached both Firefox sessions;
+- terminating one profile reduced the row to one session, and its replacement rejoined the same identity as the second session;
+- redacted advanced diagnostics exposed the evidence chain and both raw audio nodes without publishing process IDs, profile paths, or media names.
+
+Deterministic fixtures also prove that competing visible Firefox launchers fall back to executable identity rather than guessing, and that missing desktop metadata produces the same stable executable fallback.
 
 ## Reproduction checklist
 

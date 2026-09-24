@@ -144,7 +144,11 @@ public sealed class ApplicationResolver(
             AddIdMatches(desktopApplications.FindById(iconName), 70, "PipeWire icon name");
         }
 
-        DesktopCandidate[] ranked = candidates.Values
+        IEnumerable<DesktopCandidate> eligibleCandidates = candidates.Values.Any(candidate =>
+            !candidate.Entry.NoDisplay && candidate.Score >= MinimumDesktopScore)
+            ? candidates.Values.Where(candidate => !candidate.Entry.NoDisplay)
+            : candidates.Values;
+        DesktopCandidate[] ranked = eligibleCandidates
             .OrderByDescending(candidate => candidate.Score)
             .ThenBy(candidate => candidate.Entry.Id, StringComparer.OrdinalIgnoreCase)
             .ToArray();

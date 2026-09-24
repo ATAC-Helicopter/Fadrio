@@ -1,10 +1,11 @@
 using Fadrio.Application;
+using Fadrio.Cli;
 using Fadrio.Infrastructure;
 using Fadrio.NativeInterop;
 using Fadrio.Platform.Linux;
 
 string command = args.FirstOrDefault() ?? "apps";
-if (command is not ("apps" or "set" or "mute" or "unmute"))
+if (command is not ("apps" or "inspect" or "set" or "mute" or "unmute"))
 {
     PrintUsage();
     return 2;
@@ -12,7 +13,9 @@ if (command is not ("apps" or "set" or "mute" or "unmute"))
 
 bool watch = command == "apps" && args.Contains("--watch", StringComparer.Ordinal);
 if ((command == "set" && args.Length != 3) ||
-    (command is "mute" or "unmute" && args.Length != 2))
+    (command is "mute" or "unmute" && args.Length != 2) ||
+    (command == "inspect" && (args.Length is < 2 or > 3 ||
+        (args.Length == 3 && args[2] != "--redacted"))))
 {
     PrintUsage();
     return 2;
@@ -53,16 +56,21 @@ try
     }
     else if (command != "apps")
     {
-        var mixerCommands = new MixerCommands(backend, coordinator);
         var applicationId = new Fadrio.Core.ApplicationId(args[1]);
-        if (coordinator.Current.Applications.All(application => application.Identity.Id != applicationId))
+        Fadrio.Core.RuntimeApplication? application = coordinator.Current.Applications
+            .SingleOrDefault(candidate => candidate.Identity.Id == applicationId);
+        if (application is null)
         {
             Console.Error.WriteLine($"Application '{applicationId}' is not currently available.");
             shutdown.Cancel();
             await IgnoreCancellationAsync(coordinatorTask);
             return 1;
         }
-        if (command == "set")
+        if (command == "inspect")
+        {
+            Console.Write(DiagnosticTextRenderer.Render(application, args.Contains("--redacted", StringComparer.Ordinal)));
+        }
+        else if (command == "set")
         {
             if (!float.TryParse(args[2], System.Globalization.NumberStyles.Float,
                     System.Globalization.CultureInfo.InvariantCulture, out float percentage) ||
@@ -71,13 +79,15 @@ try
                 Console.Error.WriteLine("Volume must be a number from 0 to 100.");
                 return 2;
             }
-            await mixerCommands.SetApplicationVolumeAsync(applicationId, percentage / 100f, shutdown.Token);
+            await new MixerCommands(backend, coordinator)
+                .SetApplicationVolumeAsync(applicationId, percentage / 100f, shutdown.Token);
             Console.WriteLine($"Set {applicationId} to {percentage:0.#}% across all current sessions.");
         }
         else
         {
             bool muted = command == "mute";
-            await mixerCommands.SetApplicationMuteAsync(applicationId, muted, shutdown.Token);
+            await new MixerCommands(backend, coordinator)
+                .SetApplicationMuteAsync(applicationId, muted, shutdown.Token);
             Console.WriteLine($"{(muted ? "Muted" : "Unmuted")} {applicationId} across all current sessions.");
         }
     }
@@ -104,6 +114,7 @@ static void PrintUsage()
 {
     Console.Error.WriteLine("Usage:");
     Console.Error.WriteLine("  fadrioctl apps [--watch]");
+    Console.Error.WriteLine("  fadrioctl inspect <canonical-id> [--redacted]");
     Console.Error.WriteLine("  fadrioctl set <canonical-id> <0-100>");
     Console.Error.WriteLine("  fadrioctl mute <canonical-id>");
     Console.Error.WriteLine("  fadrioctl unmute <canonical-id>");
@@ -139,7 +150,6 @@ static void Print(Fadrio.Core.MixerSnapshot snapshot)
         Console.WriteLine($"Canonical ID: {application.Identity.Id}");
         Console.WriteLine($"Confidence: {application.Identity.Confidence}");
         Console.WriteLine($"Sessions: {application.Sessions.Count}");
-        Console.WriteLine($"Processes: {string.Join(", ", application.Sessions.Select(session => session.ProcessId).Where(id => id.HasValue).Select(id => id!.Value))}");
         string percentage = (application.EffectiveVolume * 100f).ToString("0", System.Globalization.CultureInfo.InvariantCulture);
         Console.WriteLine($"Volume: {percentage}%{(application.IsMixedVolume ? " (mixed)" : string.Empty)}");
         Console.WriteLine($"Muted: {application.IsMuted.ToString().ToLowerInvariant()}");

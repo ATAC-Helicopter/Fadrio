@@ -9,10 +9,14 @@ All notable changes will be documented here. The format follows [Keep a Changelo
 - `FAD-0202` Secure local PNG icon resolution with trusted XDG roots, bounded caching, and traversal, symlink, malformed-file, and size protections.
 - `FAD-0203` Flatpak-first canonical identity from bounded sandbox metadata and exported host desktop entries.
 - `FAD-0204` Optional Snap identity from corroborated wrapper metadata without invoking or depending on Snap tooling.
+- `FAD-0206` Advanced `fadrioctl inspect` diagnostics for canonical identity evidence and per-session audio state, with deterministic share-safe redaction.
+- `REL-00003` Firefox qualification covers the installed `firefox-bin` runtime, one-row grouping, visible launcher/icon preference, ambiguity safety, and executable fallback.
 
 ### Changed
 
 - `FAD-0205` XDG desktop-entry snapshots now refresh after debounced filesystem changes, advance a monotonic identity revision, and re-resolve active sessions once through the serialized mixer coordinator.
+- `FAD-0206` Ordinary `fadrioctl apps` output no longer exposes process IDs; raw process and node details live in the explicit advanced inspector.
+- `REL-00003` Visible XDG launchers now take precedence over hidden helpers when both have strong executable evidence; common `-bin` runtime names can match their launcher executable.
 
 ## [0.2.0-alpha.2] - 2026-09-13
 
