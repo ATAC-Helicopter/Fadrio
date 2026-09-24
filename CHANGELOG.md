@@ -13,6 +13,7 @@ All notable changes will be documented here. The format follows [Keep a Changelo
 - `REL-00003` Firefox qualification covers the installed `firefox-bin` runtime, one-row grouping, visible launcher/icon preference, ambiguity safety, and executable fallback.
 - `FAD-0301` XDG user-data paths and SQLite startup with versioned, checksummed, transactional schema migrations.
 - `FAD-0302` Durable application identity records, allowlisted evidence, and custom name/icon overrides with opaque keys for sensitive fallback identities.
+- `FAD-0501` Live Avalonia application rows from immutable mixer snapshots, with per-application volume and mute commands and reconnect-aware controls.
 
 ### Changed
 
