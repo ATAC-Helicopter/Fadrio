@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:Fadrio.UI.ViewModels"
+        xmlns:controls="using:Fadrio.UI.Controls"
         x:Class="Fadrio.UI.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="{Binding Title}"
@@ -29,12 +30,14 @@
                   <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
                   <TextBlock Grid.Column="1" Text="{Binding VolumeLabel}" Margin="8,0,0,0" />
                 </Grid>
-                <Slider Minimum="0" Maximum="100" Value="{Binding Volume, Mode=TwoWay}"
+                <controls:ApplicationVolumeSlider Minimum="0" Maximum="100" Value="{Binding Volume, Mode=TwoWay}"
                         IsEnabled="{Binding CanControl}" Name="VolumeSlider"
                         AutomationProperties.Name="{Binding VolumeControlLabel}" />
                 <Button Content="{Binding MuteLabel}" Command="{Binding ToggleMuteCommand}"
                         IsEnabled="{Binding CanControl}" HorizontalAlignment="Left"
                         AutomationProperties.Name="{Binding MuteControlLabel}" />
+                <TextBlock Text="{Binding CommandError}" IsVisible="{Binding HasCommandError}"
+                           TextWrapping="Wrap" FontSize="12" />
               </StackPanel>
             </Border>
           </DataTemplate>

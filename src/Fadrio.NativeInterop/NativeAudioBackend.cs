@@ -13,6 +13,7 @@ public sealed class NativeAudioBackend : IAudioBackend
     private IntPtr _context;
     private bool _started;
     private bool _disposed;
+    private readonly object _lifecycleGate = new();
 
     public NativeAudioBackend()
     {
@@ -47,42 +48,54 @@ public sealed class NativeAudioBackend : IAudioBackend
         cancellationToken.ThrowIfCancellationRequested();
         ArgumentOutOfRangeException.ThrowIfLessThan(volume, 0f);
         ArgumentOutOfRangeException.ThrowIfGreaterThan(volume, 1f);
-        ThrowOnNativeError(NativeMethods.vm_set_stream_volume(_context, nodeId, volume), "set stream volume");
+        lock (_lifecycleGate)
+        {
+            ObjectDisposedException.ThrowIf(_disposed, this);
+            ThrowOnNativeError(NativeMethods.vm_set_stream_volume(_context, nodeId, volume), "set stream volume");
+        }
         return ValueTask.CompletedTask;
     }
 
     public ValueTask SetStreamMuteAsync(uint nodeId, bool muted, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        ThrowOnNativeError(NativeMethods.vm_set_stream_mute(_context, nodeId, muted ? (byte)1 : (byte)0), "set stream mute");
+        lock (_lifecycleGate)
+        {
+            ObjectDisposedException.ThrowIf(_disposed, this);
+            ThrowOnNativeError(NativeMethods.vm_set_stream_mute(_context, nodeId, muted ? (byte)1 : (byte)0), "set stream mute");
+        }
         return ValueTask.CompletedTask;
     }
 
     public ValueTask DisposeAsync()
     {
-        if (!_disposed)
+        lock (_lifecycleGate)
         {
-            _disposed = true;
-            if (_context != IntPtr.Zero)
+            if (!_disposed)
             {
-                NativeMethods.vm_stop(_context);
-                NativeMethods.vm_context_destroy(_context);
-                _context = IntPtr.Zero;
+                _disposed = true;
+                if (_context != IntPtr.Zero)
+                {
+                    NativeMethods.vm_stop(_context);
+                    NativeMethods.vm_context_destroy(_context);
+                    _context = IntPtr.Zero;
+                }
+                _events.Writer.TryComplete();
+                GC.KeepAlive(_callback);
             }
-            _events.Writer.TryComplete();
-            GC.KeepAlive(_callback);
         }
         return ValueTask.CompletedTask;
     }
 
     private void Start()
     {
-        if (_started)
+        lock (_lifecycleGate)
         {
-            return;
+            ObjectDisposedException.ThrowIf(_disposed, this);
+            if (_started) return;
+            ThrowOnNativeError(NativeMethods.vm_start(_context), "connect to PipeWire");
+            _started = true;
         }
-        ThrowOnNativeError(NativeMethods.vm_start(_context), "connect to PipeWire");
-        _started = true;
     }
 
     private void OnNativeEvent(IntPtr nativeEventPointer, IntPtr userData)

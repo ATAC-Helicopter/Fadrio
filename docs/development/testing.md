@@ -15,3 +15,4 @@ The opt-in isolated PipeWire test is enabled with `FADRIO_RUN_PIPEWIRE_INTEGRATI
 Browser qualification evidence and its reproducible checklist are documented in [qualifying-browser.md](qualifying-browser.md).
 PipeWire restart and command-recovery evidence is documented in [qualifying-reconnect.md](qualifying-reconnect.md).
 Native ownership and sanitizer coverage is documented in [native-sanitizers.md](native-sanitizers.md).
+Rendered mixer gesture/reconnect evidence and the opt-in desktop test are documented in [qualifying-ui-interactions.md](qualifying-ui-interactions.md). That check uses process-local fixture fonts; it does not qualify the separately tracked full-host-font startup issue.

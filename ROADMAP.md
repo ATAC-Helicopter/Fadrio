@@ -181,10 +181,19 @@ Canonical ticket format:
 
 - [x] `FAD-0501` `P0` Connect immutable mixer snapshots and commands to the Avalonia view models.
 - [ ] `FAD-0502` `P1` Build accessible output and logical-application rows with mixed-volume state.
-- [ ] `FAD-0503` `P1` Add stable sorting, interaction freeze, empty, unavailable, and reconnect states.
+- [x] `FAD-0503` `P1` Add stable sorting, interaction freeze, empty, unavailable, and reconnect states.
+  - Scope: Deterministic active-row ordering and pointer/keyboard interaction freeze; connected-empty versus unavailable states and reconnect-safe commands. Persistent pinned/inactive rows remain FAD-0303.
+  - Acceptance: Rows are reused, structural changes wait until gesture end, removed targets disable immediately, queued commands are discarded on disconnect, and rendered controls recover after an isolated daemon restart.
+  - Evidence: `docs/development/qualifying-ui-interactions.md`; full host-font startup remains separately tracked by BUG-00004, and REL-00006 is still open.
 - [ ] `FAD-0504` `P1` Implement tray popup, single-instance activation, and clean shutdown.
 - [ ] `FAD-0505` `P0` Establish localization resources, keyboard navigation, screen-reader labels, and scaling tests.
 - [ ] `REL-00006` `P0` Qualify the mixer on GNOME/KDE Wayland and X11 at supported scale factors.
+- [x] `BUG-00003` `P0` Preserve application metadata across incremental PipeWire node updates.
+  - Scope: Merge supplied node-info properties without erasing omitted identity fields; honor explicit replacements and removals.
+  - Acceptance: Native delta fixtures retain application identity and process evidence, and a rendered slider drag keeps controlling the same logical application.
+- [ ] `BUG-00004` `P0` Diagnose Avalonia startup stalls with the full host font configuration.
+  - Scope: Trace font initialization on the affected desktop without changing the user's font installation or silently forcing a restricted font set.
+  - Acceptance: The normal launch reaches the mixer with the default host Fontconfig configuration, with reproducible startup evidence.
 
 ## 0.6 — MIDI controllers
 
@@ -239,5 +248,5 @@ Canonical ticket format:
 - Next `FAD-08xx`: `FAD-0806`
 - Next `FAD-09xx`: `FAD-0905`
 - Next `FAD-10xx`: `FAD-1005`
-- Next `BUG`: `BUG-00003`
+- Next `BUG`: `BUG-00005`
 - Next `REL`: `REL-00012`
