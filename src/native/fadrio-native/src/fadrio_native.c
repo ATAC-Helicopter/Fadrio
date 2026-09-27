@@ -48,15 +48,14 @@ struct vm_context {
     bool ready;
 };
 
-static char *vm_copy_property(const struct spa_dict *properties, const char *key)
-{
-    const char *value = properties == NULL ? NULL : spa_dict_lookup(properties, key);
-    return value == NULL ? NULL : strdup(value);
-}
-
 static void vm_replace_property(char **target, const struct spa_dict *properties, const char *key)
 {
-    char *replacement = vm_copy_property(properties, key);
+    /* Node info properties are incremental: omission is not removal. */
+    const struct spa_dict_item *item = spa_dict_lookup_item(properties, key);
+    if (item == NULL) {
+        return;
+    }
+    char *replacement = item->value == NULL ? NULL : strdup(item->value);
     free(*target);
     *target = replacement;
 }
@@ -131,7 +130,9 @@ static void vm_update_node_properties(vm_node *node, const struct spa_dict *prop
     vm_replace_property(&node->process_binary, properties, PW_KEY_APP_PROCESS_BINARY);
     vm_replace_property(&node->media_name, properties, PW_KEY_MEDIA_NAME);
     vm_replace_property(&node->media_role, properties, PW_KEY_MEDIA_ROLE);
-    node->process_id = vm_process_id(properties);
+    if (spa_dict_lookup_item(properties, PW_KEY_APP_PROCESS_ID) != NULL) {
+        node->process_id = vm_process_id(properties);
+    }
 }
 
 static void vm_node_info(void *data, const struct pw_node_info *info)
