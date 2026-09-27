@@ -20,6 +20,12 @@ All notable changes will be documented here. The format follows [Keep a Changelo
 - `FAD-0205` XDG desktop-entry snapshots now refresh after debounced filesystem changes, advance a monotonic identity revision, and re-resolve active sessions once through the serialized mixer coordinator.
 - `FAD-0206` Ordinary `fadrioctl apps` output no longer exposes process IDs; raw process and node details live in the explicit advanced inspector.
 - `REL-00003` Visible XDG launchers now take precedence over hidden helpers when both have strong executable evidence; common `-bin` runtime names can match their launcher executable.
+- `FAD-0503` Active mixer rows sort deterministically and stay in place during pointer/keyboard volume gestures; backend echoes cannot overwrite an active drag.
+- `FAD-0503` Volume and mute commands run off the UI thread with bounded pending state, visible failure feedback, and queued-command discard on disconnect. Connected-empty and reconnecting states have distinct messages.
+
+### Fixed
+
+- `BUG-00003` Incremental PipeWire property updates no longer erase application identity and disable an active mixer slider.
 
 ## [0.2.0-alpha.2] - 2026-09-13
 

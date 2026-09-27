@@ -33,10 +33,16 @@ internal sealed class MixerUiSession : IAsyncDisposable
     public void Start() => _runTask ??= Task.Run(RunAsync);
 
     public ValueTask SetVolumeAsync(ApplicationId id, float volume) =>
-        _commands.SetApplicationVolumeAsync(id, volume, _shutdown.Token);
+        RunCommandAsync(token => _commands.SetApplicationVolumeAsync(id, volume, token));
 
     public ValueTask SetMuteAsync(ApplicationId id, bool muted) =>
-        _commands.SetApplicationMuteAsync(id, muted, _shutdown.Token);
+        RunCommandAsync(token => _commands.SetApplicationMuteAsync(id, muted, token));
+
+    private ValueTask RunCommandAsync(Func<CancellationToken, ValueTask> command)
+    {
+        CancellationToken token = _shutdown.Token;
+        return new ValueTask(Task.Run(async () => await command(token).ConfigureAwait(false), token));
+    }
 
     private async Task RunAsync()
     {
